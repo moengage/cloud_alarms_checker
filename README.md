@@ -39,7 +39,7 @@ For example, `"Monitor" : False` tag can be used and defined inside ../inputs/*y
 
 To Contribute in the project, refer 
    1. [Developing.md](docs/DEVELOPING.md) 
-   2. [Contributing.md](docs/CONTRIBUTION.md)
+   2. [Contributing.md](docs/CONTRIBUTING.md)
    3. [Reviewing.md](docs/REVIEWING.md)
    4. [Changelog.md](docs/CHANGELOG.md)
 
