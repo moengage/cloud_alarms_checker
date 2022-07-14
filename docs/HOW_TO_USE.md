@@ -1,4 +1,4 @@
-# How to Use the MoEngage Cloud Alarms Checker
+# How to Use the Cloud Alarms Checker
 
 Following are the ways the ways to access the project:
 

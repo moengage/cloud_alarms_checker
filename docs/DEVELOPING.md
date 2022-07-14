@@ -3,21 +3,21 @@
 Currently only aws cloud is suported in the project with some definite resources. 
 
 ## Architecture
-Refer [Architechture.md](./Architecture.md)
+Refer [ARCHITECTURE.md](./ARCHITECTURE.md)
 
 ## Adding new resource in AWS 
-Refer [Readme.md](../src/cloud/aws/Readme.md)
+Refer [README.md](../src/cloud/aws/README.md)
 
 ## Adding new cloud
 1. To add a new cloud like azure or gcp, creta the respective folders inside `../cloud directory` in the format of
 ```
 cloud
     └── <new_cloud>
-    ├── Readme.md
+    ├── README.md
     ├── __init__.py
     ├── <new_cloud>_main.py
     ├── resource_classes
-    │   ├── Readme.md
+    │   ├── README.md
     │   ├── __init__.py
     │   ├── base.py
     │   ├── <resource_1>.py
@@ -47,14 +47,14 @@ Make sure, every new dependency are added in [Requirements.txt](../requirements.
 Please make sure that all the documentation present in `../docs/*.md` are updated after any development 
 
 ## Testing  and Use
-1. To know how to use the scripts refer to [How_To_Use.md](./How_To_Use.md)
+1. To know how to use the scripts refer to [HOW_TO_USE.md](./HOW_TO_USE.md)
 2. Make sure that proper testing is performed before raising the PR or mering the PRs
     a. Make sure the google sheet is preparing fine
     b. Make sure that sheet link is sent to slack channel correctly
 
 ## Adding or Changing Deployment method
 1. Add any new deployment method in `../deployments/prod/<deployment_type>
-2. Make sure you have aded proper steps in accessing the method in [Readme.md](./How_To_Use.md)
+2. Make sure you have aded proper steps in accessing the method in [README.md](./HOW_TO_USE.md)
 3. If you are making changes in existing deployment methods, make sure the proper testing is done and keep it as generic as possible.
 
 ## Contributing Guidelines
@@ -64,7 +64,7 @@ Refer [Contributing.md](./Contributing.md) for more details
 Refer [Reviewing.md](./Reviewing.md) for more details
 
 ## Merging guidelines 
-After every merge, follow the steps present in [Changelog.md](./Changelog.md) to create new tag
+After every merge, follow the steps present in [CHANGELOG.md](./CHANGELOG.md) to create new tag
 
 ## Queries
 Please mail to sre@moengage.com for any query and issue/feature request

@@ -2,7 +2,7 @@
 
 
 
-First, thank you for contributing to `MoEngage Cloud Alarms Checker`! The goal of this document is to provide everything you need to start contributing to `MoEngage Cloud Alarms Checker`. The following TOC is sorted progressively, starting with the basics and expanding into more specifics. Everyone from a first time contributor to a `MoEngage Cloud Alarms Checker` team member will find this document useful.
+First, thank you for contributing to `Cloud Alarms Checker`! The goal of this document is to provide everything you need to start contributing to `Cloud Alarms Checker`. The following TOC is sorted progressively, starting with the basics and expanding into more specifics. Everyone from a first time contributor to a `Cloud Alarms Checker` team member will find this document useful.
 
 
 
@@ -42,7 +42,7 @@ First, thank you for contributing to `MoEngage Cloud Alarms Checker`! The goal o
 
    workflow.**
 
-2. **You've read `MoEngage Cloud Alarms Checker`'s [docs](../README.md).**
+2. **You've read `Cloud Alarms Checker`'s [docs](../README.md).**
 
    Please use this for help.**
 
@@ -58,15 +58,15 @@ First, thank you for contributing to `MoEngage Cloud Alarms Checker`! The goal o
 
      Changes that are questionable will have a `needs: approval` label.
 
-2. Once approved, fork the `MoEngage Cloud Alarms Checker` repository in your own Github account (only applicable to outside contributors).
+2. Once approved, fork the `Cloud Alarms Checker` repository in your own Github account (only applicable to outside contributors).
 
 3. Create a new Git branch 
 
-4. Review the `MoEngage Cloud Alarms Checker` change control and development workflows.
+4. Review the `Cloud Alarms Checker` change control and development workflows.
 
 5. Make your changes.
 
-6. Submit the branch as a pull request to the main `MoEngage Cloud Alarms Checker` repo. A `MoEngage Cloud Alarms Checker` team member should comment and/or review your pull request within a few days. Although, depending on the circumstances, it may take longer.
+6. Submit the branch as a pull request to the main `Cloud Alarms Checker` repo. A `Cloud Alarms Checker` team member should comment and/or review your pull request within a few days. Although, depending on the circumstances, it may take longer.
 
 
 
@@ -86,7 +86,7 @@ First, thank you for contributing to `MoEngage Cloud Alarms Checker`! The goal o
 
 _All_ changes must be made in a branch and submitted as pull requests.
 
-`MoEngage Cloud Alarms Checker` has following barch naming conventions branch naming style:
+`Cloud Alarms Checker` has following barch naming conventions branch naming style:
 
 
 
@@ -130,7 +130,7 @@ The pull request title must follow the format outlined in the [conventional comm
 
 
 
-`MoEngage Cloud Alarms Checker` only requires this format for commits on the `master` branch. And because `MoEngage Cloud Alarms Checker` squashes commits before merging branches, this means that only the pull request title must conform to this format. `MoEngage Cloud Alarms Checker` performs a pull request check to verify the pull request title in case you forget.
+`Cloud Alarms Checker` only requires this format for commits on the `master` branch. And because `Cloud Alarms Checker` squashes commits before merging branches, this means that only the pull request title must conform to this format. `Cloud Alarms Checker` performs a pull request check to verify the pull request title in case you forget.
 
 
 
@@ -146,11 +146,11 @@ All pull requests should be reviewed by:
 
 - No review required for cosmetic changes like whitespace, typos, and spelling by a maintainer
 
-- One `MoEngage Cloud Alarms Checker` team member for minor changes or trivial changes from contributors
+- One `Cloud Alarms Checker` team member for minor changes or trivial changes from contributors
 
-- Two `MoEngage Cloud Alarms Checker` team members for major changes
+- Two `Cloud Alarms Checker` team members for major changes
 
-- Three `MoEngage Cloud Alarms Checker` team members for RFCs
+- Three `Cloud Alarms Checker` team members for RFCs
 
 
 
@@ -158,7 +158,7 @@ If there are any reviewers assigned, you should also wait for their review.
 
 
 
-For reviwer details, mail to sre@moengage.com
+For reviwer details, mail to opensource@moengage.com
 
 
 
@@ -166,7 +166,7 @@ For reviwer details, mail to sre@moengage.com
 
 
 
-All pull requests are squashed and merged. We generally discourage large pull requests that are over 300-500 lines of diff. If you would like to propose a change that is larger we suggest mail us to sre@moengage.com and discuss it with one of our engineers. This way we can talk through the solution and discuss if a change that large is even needed! This will produce a quicker response to the change and likely produce code that aligns better with our process.
+All pull requests are squashed and merged. We generally discourage large pull requests that are over 300-500 lines of diff. If you would like to propose a change that is larger we suggest mail us to opensource@moengage.com and discuss it with one of our engineers. This way we can talk through the solution and discuss if a change that large is even needed! This will produce a quicker response to the change and likely produce code that aligns better with our process.
 
 
 
@@ -174,7 +174,7 @@ All pull requests are squashed and merged. We generally discourage large pull re
 
 
 
-Currently `MoEngage Cloud Alarms Checker` uses Woodpecker to run tests. The workflows are defined in `../.woodpecker.yml`.
+Currently `Cloud Alarms Checker` uses Woodpecker to run tests. The workflows are defined in `../.github/main.yml`.
 
 
 
@@ -182,4 +182,4 @@ Currently `MoEngage Cloud Alarms Checker` uses Woodpecker to run tests. The work
 
 
 
-Refer [Changelog.md](./Changelog.md).
+Refer [Changelog.md](./CHANGELOG.md).

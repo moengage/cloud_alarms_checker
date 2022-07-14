@@ -29,27 +29,25 @@ For example, `"Monitor" : False` tag can be used and defined inside ../inputs/*y
 
 ## Documentaions
 
-1. To know more about the architechture, refer [Architecture.md](docs/Architecture.md)
+1. To know more about the architechture, refer [Architecture.md](docs/ARCHITECTURE.md)
 
-2. To know more about on how to use the script, refer [How_To_Use.md](docs/How_To_Use.md)
+2. To know more about on how to use the script, refer [How_To_Use.md](docs/HOW_TO_USE.md)
 
-3. To know more about on how to deploy the scripts in production environment, refer [Deployment.md](deployments/Readme.md)
+3. To know more about on how to deploy the scripts in production environment, refer [Deployment.md](deployments/README.md)
 
 ## Contributions
 
 To Contribute in the project, refer 
-   1. [Developing.md](docs/Developing.md) 
-   2. [Contributing.md](docs/Contributing.md)
-   3. [Reviewing.md](docs/Reviewing.md)
-   4. [Changelog.md](docs/Changelog.md)
+   1. [Developing.md](docs/DEVELOPING.md) 
+   2. [Contributing.md](docs/CONTRIBUTION.md)
+   3. [Reviewing.md](docs/REVIEWING.md)
+   4. [Changelog.md](docs/CHANGELOG.md)
 
    
 ## Resources
 
-To know more about the policies, refer to [Code_of_Conduct.md](docs/Code_Of_Conduct.md)
+To know more about the policies, refer to [Code_of_Conduct.md](docs/CODE_OF_CONDUCT.md)
 
 --------------------------------------------------------------------------------------------------------------------------------------
 <p align="center">Developed by <strong><a href="https://moenagage.com">MoEngage Team</a></strong></p>
 <p align="center"> For any queries plaese opensource@moenagage.com </p>
-
-                           

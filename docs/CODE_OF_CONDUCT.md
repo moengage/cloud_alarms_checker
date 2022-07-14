@@ -84,7 +84,7 @@ This Code of Conduct applies both within project spaces and in public spaces whe
 
 
 
-Instances of abusive, harassing, or otherwise unacceptable behavior may be reported by contacting the project team at [mail](sre@moengage.com).
+Instances of abusive, harassing, or otherwise unacceptable behavior may be reported by contacting the project team at [mail](opensource@moengage.com).
 
 
 

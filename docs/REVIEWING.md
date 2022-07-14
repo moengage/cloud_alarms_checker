@@ -32,7 +32,7 @@
 
 
 
-Pull request reviews are required before merging code into `MoEngage Cloud Alarms Checker`. This document will outline `MoEngage Cloud Alarms Checker`'s pull request review requirements. The following checklist should be used for all pull requests:
+Pull request reviews are required before merging code into `Cloud Alarms Checker`. This document will outline `Cloud Alarms Checker`'s pull request review requirements. The following checklist should be used for all pull requests:
 
 
 
@@ -68,7 +68,7 @@ We endeavour to review all PRs within 2 working days (Monday to Friday ) of subm
 
 
 
-All changes should strive to retain backward compatibility. If a change breaks backward compatibility, it is much less likely to be approved. It is highly recommended you discuss this change with a `MoEngage Cloud Alarms Checker` team member before investing development time.
+All changes should strive to retain backward compatibility. If a change breaks backward compatibility, it is much less likely to be approved. It is highly recommended you discuss this change with a `Cloud Alarms Checker` team member before investing development time.
 
 
 
@@ -76,7 +76,7 @@ All changes should strive to retain backward compatibility. If a change breaks b
 
 
 
-If you have not, please review `MoEngage Cloud Alarms Checker`'s [Code of Conduct](./Code_Of_Conduct.md) to ensure reviews are welcoming, open, and respectful.
+If you have not, please review `Cloud Alarms Checker`'s [Code of Conduct](./CODE_OF_CONDUCT.md) to ensure reviews are welcoming, open, and respectful.
 
 
 
@@ -98,7 +98,7 @@ Dependencies should be _carefully_ selected. Before adding a dependency, we shou
 
 5. Does this dependency have a history of security vulnerabilities?
 
-6. Will this affect the portability of `MoEngage Cloud Alarms Checker`?
+6. Will this affect the portability of `Cloud Alarms Checker`?
 
 7. Does the dependency have a compatible license?
 
@@ -108,7 +108,7 @@ Dependencies should be _carefully_ selected. Before adding a dependency, we shou
 
 
 
-Documentation is incredibly important to `MoEngage Cloud Alarms Checker`; it is a feature and differentiator for `MoEngage Cloud Alarms Checker`. Pull requests should not be merged without adequate documentation, nor should they be merged with "TODOs" opened for documentation.
+Documentation is incredibly important to `Cloud Alarms Checker`; it is a feature and differentiator for `Cloud Alarms Checker`. Pull requests should not be merged without adequate documentation, nor should they be merged with "TODOs" opened for documentation.
 
 
 
@@ -116,7 +116,7 @@ Documentation is incredibly important to `MoEngage Cloud Alarms Checker`; it is 
 
 
 
-Changes in a pull request should address a single concern. This promotes quality reviews through focus. If a pull request addresses multiple concerns, it should be closed and followed up with multiple pull requests addresses each concern separately. If you are unsure about your change, please open an issue and the `MoEngage Cloud Alarms Checker` maintainers will help guide you through the scope of the change.
+Changes in a pull request should address a single concern. This promotes quality reviews through focus. If a pull request addresses multiple concerns, it should be closed and followed up with multiple pull requests addresses each concern separately. If you are unsure about your change, please open an issue and the `Cloud Alarms Checker` maintainers will help guide you through the scope of the change.
 
 
 
@@ -140,7 +140,7 @@ Unsafe code should be reviewed carefully and avoided if possible. If code is mar
 
 
 
-Security is incredibly important to `MoEngage Cloud Alarms Checker`. Users rely on `MoEngage Cloud Alarms Checker` ship mission-critical and sensitive data. Please review the code explicitly for security issues.
+Security is incredibly important to `Cloud Alarms Checker`. Users rely on `Cloud Alarms Checker` ship mission-critical and sensitive data. Please review the code explicitly for security issues.
 
 
 
@@ -148,4 +148,4 @@ Security is incredibly important to `MoEngage Cloud Alarms Checker`. Users rely 
 
 
 
-Code should be reasonably tested. `MoEngage Cloud Alarms Checker` does not require 100% test coverage. We believe this level of coverage is unnecessary. As a general rule of thumb, we strive for 80% coverage, beyond this returns are diminishing. Please use your best judgment, some code requires more testing than others depending on its importance.
+Code should be reasonably tested. `Cloud Alarms Checker` does not require 100% test coverage. We believe this level of coverage is unnecessary. As a general rule of thumb, we strive for 80% coverage, beyond this returns are diminishing. Please use your best judgment, some code requires more testing than others depending on its importance.
