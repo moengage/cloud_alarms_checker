@@ -67,6 +67,6 @@ Refer [Reviewing.md](./Reviewing.md) for more details
 After every merge, follow the steps present in [CHANGELOG.md](./CHANGELOG.md) to create new tag
 
 ## Queries
-Please mail to sre@moengage.com for any query and issue/feature request
+Please mail to opensource@moengage.com for any query and issue/feature request
 
 **IMP NOTE** - Make sure the code remains generic as much as possible.
