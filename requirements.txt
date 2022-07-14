@@ -1,0 +1,6 @@
+boto3==1.17.49
+gspread==3.4.2
+prettytable==2.1.0
+sentry-sdk==1.0.0
+requests==2.25.1
+click==8.0.1
