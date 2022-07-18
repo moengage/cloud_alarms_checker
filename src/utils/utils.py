@@ -35,8 +35,10 @@ def datetime_serializer(o):
     if isinstance(o, datetime.datetime):
         return o.__str__()
 
-def set_input(input):
-	global input = input
+def set_input(file_input):
+
+    global input 
+    input = file_input
 
 
 def yaml_reader(): 

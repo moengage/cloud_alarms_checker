@@ -23,6 +23,7 @@ Following is the architecture
 .
 ├── README.md                  -> Top Level README, explaining the use of project
 |__ LICENSE.md                 -> MIT License
+|__ VERSION                    -> Version file containing latest tag information
 ├── deployments                -> Copntains the methods on how to deploy in production environment
 │   └── prod
 │       ├── docker
