@@ -2,6 +2,8 @@ import datetime
 import yaml
 from yaml.loader import SafeLoader
 
+input = None 
+
 def get_chunked_list(_list, chunk_size):
 
     '''
@@ -33,8 +35,11 @@ def datetime_serializer(o):
     if isinstance(o, datetime.datetime):
         return o.__str__()
 
+def set_input(input):
+	global input = input
 
-def yaml_reader(input):
+
+def yaml_reader(): 
 
     with open(input) as f:
         data = yaml.load(f, Loader=SafeLoader)

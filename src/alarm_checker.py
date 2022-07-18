@@ -23,8 +23,10 @@ def main(input):
 
     '''
 
+    set_input(input)
+
     # This will read all the inputs provided in input_yaml
-    yaml_inputs = yaml_reader(input)
+    yaml_inputs = yaml_reader()
     print(input)
 
     # Fetching the environment
