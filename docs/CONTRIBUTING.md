@@ -120,6 +120,8 @@ Please ensure your commits are small and focused; they should tell a story of yo
 
 Once your changes are ready, you must submit your branch to main branch.
 
+**NOTE**: Plaese add the latest tag in VERSION file as well during the PR
+
 
 
 #### Title
