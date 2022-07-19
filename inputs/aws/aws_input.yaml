@@ -7,10 +7,10 @@
 spec:
   cloud: aws
   env: prod
-  regions: ['us-east-2']
+  regions: ['us-east-1', 'ap-south-1' , 'eu-central-1', 'us-east-2']
   exclude_resources_on_tags:
-    tag: 'Monitor'
-    value: 'False'
+  tag: 'Monitor'
+  value: 'False'
 
   resources_to_ckeck: [TargetGroupAWSResource, SQSQueueAWSResourceGroup, LoadBalancerAWSResource, ElasticacheRedisAWSResource  ]
   

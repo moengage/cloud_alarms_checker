@@ -60,7 +60,7 @@ def main(input):
         sheet_link = spreadsheet_writer.sheet_url
         alert_message = ( f'Unmonitored `{env}` `{cloud}` resources - {sheet_link}')
       
-        send_notification( alert_message, yaml_inputs['outboundNotification']['slack'])
+        send_notification( alert_message, yaml_inputs)
     
 if __name__ == '__main__':
     main()
