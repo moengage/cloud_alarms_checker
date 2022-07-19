@@ -49,5 +49,5 @@ To Contribute in the project, refer
 To know more about the policies, refer to [Code_of_Conduct.md](docs/CODE_OF_CONDUCT.md)
 
 --------------------------------------------------------------------------------------------------------------------------------------
-<p align="center">Developed by <strong><a href="https://moenagage.com">MoEngage Team</a></strong></p>
+<p align="center">Developed by <strong><a href="https://moengage.com">MoEngage Team</a></strong></p>
 <p align="center"> For any queries plaese opensource@moenagage.com </p>
