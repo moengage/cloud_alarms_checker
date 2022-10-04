@@ -166,15 +166,17 @@ class AWSAlarmReader():
 
             # Metric Stat is present in alarms, then the required details details will be fetched from these as well
             # this is useful in the case of compoite alarms
-            for metric in alarm.get('Metrics', []):
-                if 'MetricStat' not in metric:
-                    continue
+            # Commented the below block to fix the issue which is occuring if the resource ( Ex. SQS ) is a part of multimetric alarm.
+            # Than the value (Resource Name - queue_name) is not showing up in the final spreadsheet result, as ideally it should come.
+#             for metric in alarm.get('Metrics', []):
+#                 if 'MetricStat' not in metric:
+#                     continue
 
-                _metric = metric['MetricStat']['Metric']
-                self.set_data_in_mandatory_metrics_map(_metric)
-                self.set_mandatory_metric_with_threshold(_metric)
-                self.capture_alarm_action( alarm['AlarmArn'], alarm['AlarmName'], alarm['AlarmActions'],
-                                           _metric['MetricName'], _metric['Dimensions'])
+#                 _metric = metric['MetricStat']['Metric']
+#                 self.set_data_in_mandatory_metrics_map(_metric)
+#                 self.set_mandatory_metric_with_threshold(_metric)
+#                 self.capture_alarm_action( alarm['AlarmArn'], alarm['AlarmName'], alarm['AlarmActions'],
+#                                            _metric['MetricName'], _metric['Dimensions'])
 
     def read(self):
 
