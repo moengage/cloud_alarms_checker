@@ -144,6 +144,23 @@ class AWSAlarmReader():
         self.RESOURCE_TYPE_ALARM_ACTION_MAP[resource_type].append([
                 resource_name, alarm_name, metric_name, action_types,
                 alarm_actions])
+        
+    def check_autoscaling_alarm_actions(self, alarm_actions):
+        
+        '''
+            This function wil check whether teh described alarm contains autoscaling actions.
+            In simple words it checks that alarm is autoscaling alarm or alert based alarm
+            
+        '''
+
+        autoscaling_alarm = False
+        if len(alarm_actions) > 0:
+            for alarm_action in alarm_actions:
+                if 'arn:aws:autoscaling' in alarm_action:
+                    autoscaling_alarm = True
+                    break
+                    
+        return autoscaling_alarm
 
     def set_mandatory_metrics_map_for_page(self, page):
 
@@ -159,10 +176,14 @@ class AWSAlarmReader():
 
             # If NameSpace is present in alarms, then directly different details will be captured.
             if 'Namespace' in alarm:
-                self.set_data_in_mandatory_metrics_map(alarm)
-                self.set_mandatory_metric_with_threshold(alarm)
-                self.capture_alarm_action( alarm['AlarmArn'], alarm['AlarmName'], alarm['AlarmActions'],
-                                           alarm['MetricName'], alarm['Dimensions'])
+                
+                # This function wil check whether teh described alarm contains autoscaling actions.
+                autoscaling_alarm = self.check_autoscaling_alarm_actions(alarm['AlarmActions'])
+                
+                if autoscaling_alarm == False:
+                    self.set_data_in_mandatory_metrics_map(alarm)
+                    self.set_mandatory_metric_with_threshold(alarm)
+                    self.capture_alarm_action( alarm['AlarmArn'], alarm['AlarmName'], alarm['AlarmActions'], alarm['MetricName'], alarm['Dimensions'])
 
             # Metric Stat is present in alarms, then the required details details will be fetched from these as well
             # this is useful in the case of compoite alarms
