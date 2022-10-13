@@ -148,7 +148,7 @@ class AWSAlarmReader():
     def check_autoscaling_alarm_actions(self, alarm_actions):
         
         '''
-            This function wil check whether teh described alarm contains autoscaling actions.
+            This function wil check whether the described alarm contains autoscaling actions.
             In simple words it checks that alarm is autoscaling alarm or alert based alarm
             
         '''
@@ -180,7 +180,7 @@ class AWSAlarmReader():
                 # This function wil check whether teh described alarm contains autoscaling actions.
                 autoscaling_alarm = self.check_autoscaling_alarm_actions(alarm['AlarmActions'])
                 
-                if autoscaling_alarm == False:
+                if not autoscaling_alarm:
                     self.set_data_in_mandatory_metrics_map(alarm)
                     self.set_mandatory_metric_with_threshold(alarm)
                     self.capture_alarm_action( alarm['AlarmArn'], alarm['AlarmName'], alarm['AlarmActions'], alarm['MetricName'], alarm['Dimensions'])
