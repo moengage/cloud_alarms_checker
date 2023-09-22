@@ -19,16 +19,6 @@ spec:
     useAwsSecretManager: True
     #useAwsSecretManager: False
 
-  outboundNotification:
-    slack:
-      useSlack: True
-      slackChannelName: []
-      useAwsSecretManager: True
-      secretName: 'infinity-slack-secrets'
-      secretRegion: ''
-      #useAwsSecretManager: False
-      #slackWebhookUrl: []
-
   sheets:
     googleSheets:
       useSheets: True

@@ -22,26 +22,30 @@ def get_slack_webhook_for_channel(inputs):
         return inputs['slackWebhookUrl']
 
 
-def send_slack_notification(text, inputs):
+def send_slack_notification(texts, inputs):
     
     '''
         Sending the spread sheet Url created and text generated to the slack channel
     '''
 
-    if not text:
+    if len(texts) == 0:
         return
-    print('Sending to slack...', text)
+    
+    msg = f'\n'
+    for text in texts:
+        msg +=  f'{text}\n\n'
+            
+    print('Sending to slack...')
 
     # This will fetch the webhook Url from the AWs secret Manager
     webhook_urls = get_slack_webhook_for_channel(inputs)
-    print(webhook_urls)
 
     headers = {
         'Content-Type': 'application/json',
     }
 
     message = {
-        "text": text
+        "text": msg
     }
 
     for webhook_url in webhook_urls:

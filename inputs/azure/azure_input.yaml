@@ -11,17 +11,7 @@ spec:
       client_secret: ''
       tenant_id:  ''
       resource_group: ''
-
-  outboundNotification:
-    slack:
-      useSlack: True
-      slackChannelName: []
-      useAwsSecretManager: True
-      secretName: 'infinity-slack-secrets'
-      secretRegion: ''
-      #useAwsSecretManager: False
-      #slackWebhookUrl: []
-
+      
   sheets:
     googleSheets:
       useSheets: True
