@@ -8,15 +8,17 @@ def get_slack_webhook_for_channel(inputs):
     '''
         Getting the slack webhook Url from Aws Secret Manager
     '''
+    
+    webhookUrls = []
 
     if inputs['useAwsSecretManager'] == True:
 
         secret = AWSSecretStoreSecret( inputs['secretName'], inputs['secretRegion']).get()
         secret = json.loads(secret)
-        return secret.get(inputs['slackChannelName'])
-    
+        for slackChannelName in inputs['slackChannelName']:
+          webhookUrls.append(secret.get(slackChannelName))
+        return webhookUrls
     else:
-
         return inputs['slackWebhookUrl']
 
 
@@ -31,7 +33,8 @@ def send_slack_notification(text, inputs):
     print('Sending to slack...', text)
 
     # This will fetch the webhook Url from the AWs secret Manager
-    webhook_url = get_slack_webhook_for_channel(inputs)
+    webhook_urls = get_slack_webhook_for_channel(inputs)
+    print(webhook_urls)
 
     headers = {
         'Content-Type': 'application/json',
@@ -41,9 +44,10 @@ def send_slack_notification(text, inputs):
         "text": text
     }
 
-    http = urllib3.PoolManager()
-    response = http.request(
-        'POST', webhook_url, headers=headers, body=json.dumps(message))
+    for webhook_url in webhook_urls:
+        http = urllib3.PoolManager()
+        response = http.request(
+            'POST', webhook_url, headers=headers, body=json.dumps(message))
 
-    if response.status != 200:
-        print('Failed to send slack', response.status, response.data)
+        if response.status != 200:
+            print('Failed to send slack', response.status, response.data)

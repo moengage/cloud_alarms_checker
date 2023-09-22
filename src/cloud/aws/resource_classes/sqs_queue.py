@@ -121,9 +121,9 @@ class SQSQueueAWSResourceGroup(BaseAWSResource):
         filtered_resources = self.get_resource_ids(all_resources)
 
         # List of the resources not containing INACTIVE tag
-        # monitored_resources = self.filter_active_resources_by_monitor_tag(filtered_resources)
+        monitored_resources = self.filter_active_resources_by_monitor_tag(filtered_resources)
 
-        return filtered_resources
+        return monitored_resources
 
     def get_resources_to_monitor(self):
 

@@ -1,23 +1,16 @@
-######## AWS Cloud Related Inputs ######## 
-
-  # If dont want to use AWS Secret Manager 
-  #   1. Uncomment the commented part having useAwsSecretManager : False
-  #   2. As a result of this, AWS Secret Manager related variables will be ignored
+######## Azure Cloud Related Inputs ######## 
 
 spec:
-  cloud: aws
+  cloud: azure
   env: prod
   env_region_map:
     dc01:
       region: ''
-      secret_name: 'infinity-prod-user'
-      secretRegion: ''
-      #aws_access_key: ''
-      #aws_access_secret: ''
-
-  awsAccessSecrets:
-    useAwsSecretManager: True
-    #useAwsSecretManager: False
+      subscription_id: ''
+      client_id: ''
+      client_secret: ''
+      tenant_id:  ''
+      resource_group: ''
 
   outboundNotification:
     slack:

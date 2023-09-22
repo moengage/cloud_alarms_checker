@@ -56,3 +56,6 @@ class AlarmActionType:
 
 
 MANDATORY_ACTION_TYPES = [AlarmActionType.SNS]
+
+MONITOR_TAG = 'Monitor'
+MONITOR_TAG_INACTIVE_VALUE = 'False'

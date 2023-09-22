@@ -8,7 +8,7 @@
 #     
 #     2. In CronJob kind
 #         a. Update the medadata name
-#         b. Update teh namespace
+#         b. Update the namespace
 #         c. Update the schedule for cron
 #         d. Update the Container name
 #         e. Update the dcker repo path if required

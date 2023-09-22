@@ -63,6 +63,10 @@ class ElasticacheRedisAWSResource(BaseAWSResource):
                 retry_count += 1
                 traceback.print_exc()
                 time.sleep(30)
+                
+                
+            except Exception:
+                pass
 
         return resource_arn_tags_map
 
@@ -122,10 +126,10 @@ class ElasticacheRedisAWSResource(BaseAWSResource):
         print('ALL RESOURCES COUNT: %s' % len(all_resources))
         all_resource_arns = self.get_resource_ids(all_resources)
 
-        #monitored_resources = self.filter_active_resources_by_monitor_tag(all_resource_arns)
+        monitored_resources = self.filter_active_resources_by_monitor_tag(all_resource_arns)
 
-        #return monitored_resources
-        return all_resource_arns
+        return monitored_resources
+        #return all_resource_arns
 
     def get_resources_to_monitor(self):
 

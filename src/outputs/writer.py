@@ -11,7 +11,7 @@ def write_to_spreadsheet(spreadsheet_writer, resource_class, active_resources, r
     '''
 
     # Adding Region And Resource type in header
-    header_row = [ 'Region', resource_class.ACTIVE_RESOURCE_TYPE ]
+    header_row = [ 'DC_NAME', resource_class.ACTIVE_RESOURCE_TYPE ]
 
     # If SUPPRESS_ON_ANY_METRIC variale is set, then one more extra field is appended
     if not resource_class.SUPPRESS_ON_ANY_METRIC:
