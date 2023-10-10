@@ -15,7 +15,6 @@ def check_sns_validity(integration_id_list,region,sns_arn):
             if (subcription['Protocol'] == 'https' ) and ( 'https://events.pagerduty.com/integration' in subcription['Endpoint']):
                 url = subcription['Endpoint']
                 integration_id = url.split("/")[-2]
-                # integration_keys=run_integration()
                 if integration_id in integration_id_list:
                     result="Valid Alarm"
                     break

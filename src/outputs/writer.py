@@ -24,27 +24,19 @@ def write_to_spreadsheet(spreadsheet_writer, resource_class, active_resources, r
     if not resource_class.SUPPRESS_ON_ANY_METRIC:
         header_row.append('Alarm')
 
-    # Adding other fields in the header
-    
-
     # Creating the sheet for a specific resource type in the spread sheet with header row defined above.
     sheet = spreadsheet_writer.create_sheet( resource_class.VERBOSE_NAME, header_row)
 
     # Creating more rows based on the details obtained from the map, like region name, resource_name etc.
     first_rows = get_rows_from_region_unmonitored_resources_map( region_unmonitored_resources_map, resource_class, business_team_map)
 
-    print("first rows")
-    print(first_rows)
     second_rows= get_rows_from_alarm_action_map( resource_class, active_resources, regional_resource_type_alarm_action_map,region_unmonitored_resources_map, business_team_map, sns_topic_subscription_map,integration_id_list, yaml_inputs)
-    print("second_rows")
-    print(second_rows)
     rows=[]
     for index1 in first_rows:
         found = False
         for index2 in second_rows:
             if index1[0] == index2[0] and index1[1] == index2[1]:
                 # Joining two relevant columns with a new line separator
-                print("Inside")
                 rows.append([index1[0], index1[1], index1[2], index2[3], index2[4],
                                 index2[5],index1[6]+"\n" + index2[6], index2[7]])
                 found = True
@@ -52,11 +44,6 @@ def write_to_spreadsheet(spreadsheet_writer, resource_class, active_resources, r
         if not found:
             rows.append(index1)
 
-    print("Rows from writer.py")
-    print(rows)
-    print("-----from writer function --------")
-    print(region_unmonitored_resources_map )
-    print(sns_topic_subscription_map)
     sheet.append_rows(rows, value_input_option='USER_ENTERED')
     sheet.sort(
         (5, 'asc'), (8, 'asc'), (5, 'asc'), (1, 'asc'),
@@ -98,7 +85,7 @@ def get_rows_from_region_unmonitored_resources_map( region_unmonitored_resources
             if not resource_class.SUPPRESS_ON_ANY_METRIC:
                 row.append(f'----{reason}\n'.join(metrics))
             row[-1]=row[-1]+f"----{reason}"
-                # row.append(f'\n'.join(metrics))
+                
             rows.append(row)
     return rows
 
@@ -125,26 +112,16 @@ def get_rows_from_alarm_action_map(resource_class, active_resources, regional_re
             resource_name = resource_name.split('/')[2]
 
         active_resource_names.append(resource_name)
-        
-    print("regional_resource_type_alarm_action_map from writer.py inside")
-    print(regional_resource_type_alarm_action_map)
+
     for region, resource_map in regional_resource_type_alarm_action_map.items():
-
-        print("Region from writer get_rows_from_alarm_action_map")
-        print(region)
-
 
         # fetching resources for a specific region 
         aws_resource = region_unmonitored_resources_map[region][0]
-        print(resource_map[resource_type])
+        
         # Fetching resource name, alarm name, metruc name etc from the map
         for resource_name, alarm_name, metric_name, action_types, alarm_actions in resource_map[resource_type]: 
             missing_action_types = set(MANDATORY_ACTION_TYPES) - set(action_types) 
             
-            print("resource_name, alarm_name, metric_name, action_types, alarm_actions")
-            print(resource_name, alarm_name, metric_name, action_types, alarm_actions)
-            print("missing_action_types")
-            print(missing_action_types)
             # Skip inactive resources
             if resource_name not in active_resource_names:
                 continue
@@ -175,12 +152,11 @@ def get_rows_from_alarm_action_map(resource_class, active_resources, regional_re
                         if alarm_action in sns_topic_subscription_map[region]:
                             has_sns_subscription = True
                         subscription_arn = alarm_action
-                        print("subscription_arn")
-                        print(subscription_arn)
                         region_name=yaml_inputs['env_region_map'][region]['region']
+
+                        # This will check the validity of the sns topic by checking the pagerduty integration key
                         subscription_info = check_sns_validity(integration_id_list,region_name,subscription_arn)
-                        print("subscription_info")
-                        print(subscription_info)
+                        
                         if subscription_info == "Valid Alarm":
                             valid_subscription = True
                         break
@@ -194,17 +170,12 @@ def get_rows_from_alarm_action_map(resource_class, active_resources, regional_re
 
             if not reason:
                 continue
-
-            # Finding teh alarm link for all those alarm which are associted with resouves and dont have SNS topic
-            alarm_link = get_alarm_link(alarm_name, region)
-            
             
             row = [region, resource_name]
             try:
                 tags = aws_resource.RESOURCE_TAGS_MAP[resource_name]
             except KeyError:
                 print("KeyError for ", resource_name)
-
 
             business = tags.get('Business', '').lower()
             row.extend([
@@ -216,21 +187,15 @@ def get_rows_from_alarm_action_map(resource_class, active_resources, regional_re
 
 
             if not resource_class.SUPPRESS_ON_ANY_METRIC:
-                print("Inside Suppress")
                 row.append(metric_name)
 
             row[-1]=row[-1]+f"----{reason}"
-            print(row)
                 
             alarm = alarm_name
             alarmlink=f'https://console.aws.amazon.com/cloudwatch/home?region={region_name}#alarmsV2:alarm/{alarm}'
-            # if not text_format:
-            #     alarm = f'=HYPERLINK("{alarm_link}","{alarm_name}")'
 
             if not resource_class.SUPPRESS_ON_ANY_METRIC:
-                print("Inside Suppress Alarm")
                 row.append(alarmlink)
-
             rows.append(row)
         
     if len(rows)>1:
@@ -247,6 +212,5 @@ def get_rows_from_alarm_action_map(resource_class, active_resources, regional_re
                 rows_return.append(item)
     else:
         rows_return=rows
-
-    print(rows_return)
+        
     return rows_return

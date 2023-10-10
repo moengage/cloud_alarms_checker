@@ -29,6 +29,8 @@ class SQSQueueAWSResourceGroup(BaseAWSResource):
     ACTIVE_RESOURCE_TYPE = ResourceType.SQS_QUEUE
     
     EXCLUDE_SUFFIX = 'celery-pidbox'
+
+    # commenting this as we want to check the data for SQS also, with below set to True it will not check for SQS
     # SUPPRESS_ON_ANY_METRIC = True
 
     def get_tag_for_queue(self, queue_url):

@@ -11,11 +11,13 @@ class CloudwatchMetric:
     HTTPCode_Target_5XX_Count = 'HTTPCode_Target_5XX_Count'
     TargetResponseTime = 'TargetResponseTime'
     FreeableMemory = 'FreeableMemory'
+
     EngineCPUUtilization = 'EngineCPUUtilization'
     CPUUtilization = 'CPUUtilization'
     DatabaseMemoryUsagePercentage = 'DatabaseMemoryUsagePercentage'
     NewConnections = 'NewConnections'
     NetworkConntrackAllowanceExceeded ='NetworkConntrackAllowanceExceeded'
+    
     HealthyHostCount = 'HealthyHostCount'
     ApproximateAgeOfOldestMessage = 'ApproximateAgeOfOldestMessage'
     ApproximateNumberOfMessagesDelayed = 'ApproximateNumberOfMessagesDelayed'

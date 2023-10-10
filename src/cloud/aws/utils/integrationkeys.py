@@ -2,7 +2,7 @@ import json
 import pypd
 import requests
 import concurrent.futures
-from aws.utils.secret import AWSSecretStoreSecret
+from cloud.aws.utils.secret import AWSSecretStoreSecret
 
 # Function to fetch all teams and their associated services
 def get_teams_and_services():
@@ -43,6 +43,7 @@ def get_teams_and_services():
     return team_services
 
 def get_integration_details(service_id, integration_id, api_key):
+    
     # Set the PagerDuty API endpoint and request parameters
     url = f'https://api.pagerduty.com/services/{service_id}/integrations/{integration_id}'
     headers = {
@@ -62,19 +63,18 @@ def get_integration_details(service_id, integration_id, api_key):
 
     # Print the API response content
     json_response=response.content.decode()
+
     # Parse the JSON response
     parsed_response = json.loads(json_response)
 
     # Extract the value of the integration_key field
     integration_key = parsed_response['integration']['integration_key']
 
-    # Print the integration key
-    print(f'The integration key is: {integration_key}')
-
     return integration_key
 
-# Function to fetch integrations for a service
+# Function to fetch integration id for a service
 def get_service_integration(service_id):
+    
     api_key=get_pd_api_key()
     try:
         # Fetch the service by ID
@@ -89,6 +89,7 @@ def get_service_integration(service_id):
                 if integration_key is not None:
                     integration_keys.append(integration_key)
             return integration_keys
+            
         elif service['status'] == 'disabled':
             print(service_id, "is disabled")
             return []
@@ -158,7 +159,6 @@ def run_integration():
         team_integration_keys = get_integrations_for_team(team)
         integration_key_list.extend(team_integration_keys)
 
-    print(integration_key_list)
     print(f'Total integration keys: {len(integration_key_list)}')
 
     return integration_key_list

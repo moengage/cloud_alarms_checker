@@ -9,7 +9,7 @@ def send_notification(alert_message):
 
     if data['outboundNotification']['slack']['useSlack'] == True:
         print("Slack send skipped")
-        # send_slack_notification(alert_message, data['outboundNotification']['slack'])
+        send_slack_notification(alert_message, data['outboundNotification']['slack'])
     
     else:
         raise Exception("Please add code for some other notification channel like mail, teams etc")
