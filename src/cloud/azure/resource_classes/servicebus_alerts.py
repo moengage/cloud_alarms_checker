@@ -161,6 +161,7 @@ def get_servicebus_missing_metrics(service_bus_sheet, dc , dc_name , table):
                         servicebus_queue_map[service_bus_name][queue_name]["NumberOfMessagesVisible"]["link"] = alarm_name
                         servicebus_queue_map[service_bus_name][queue_name]['NumberOfMessagesVisible']["alarm_present"] = "yes"
                     else:
-                        del servicebus_queue_map[service_bus_name][queue_name]["NumberOfMessagesVisible"]
+                        if queue_name in servicebus_queue_map[service_bus_name]:
+                            del servicebus_queue_map[service_bus_name][queue_name]["NumberOfMessagesVisible"]
 
     write_service_bus_metrics_to_spreadsheet( service_bus_sheet, servicebus_list, dc_name, table)
