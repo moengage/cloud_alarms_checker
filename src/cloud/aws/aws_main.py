@@ -12,13 +12,15 @@ from cloud.aws.utils.alarms import *
 from cloud.aws.utils.boto_client import *
 
 from cloud.aws.utils.alarms import AWSAlarmReader, get_sns_topic_subscription_map
+from cloud.aws.utils.integrationkeys import run_integration
 
 from cloud.aws.resource_classes.target_group import TargetGroupAWSResource
 from cloud.aws.resource_classes.sqs_queue import SQSQueueAWSResourceGroup
 from cloud.aws.resource_classes.load_balancer import LoadBalancerAWSResource
 from cloud.aws.resource_classes.elasticache_redis import ElasticacheRedisAWSResource
 
-resource_classes = [TargetGroupAWSResource, SQSQueueAWSResourceGroup, LoadBalancerAWSResource, ElasticacheRedisAWSResource]
+# resource_classes = [TargetGroupAWSResource, SQSQueueAWSResourceGroup, LoadBalancerAWSResource, ElasticacheRedisAWSResource]
+resource_classes = [ ElasticacheRedisAWSResource]
 
 def generate_pretty_table( resource_class, active_resources, region_unmonitored_resources_map,
                            regional_resource_type_alarm_action_map, business_team_map, sns_topic_subscription_map):
@@ -63,7 +65,7 @@ def generate_pretty_table( resource_class, active_resources, region_unmonitored_
 
     return len(rows)
 
-def get_unmonitored_metric_for_resources( env, dc, resource_class, alarm_reader, boto_client):
+def get_unmonitored_metric_for_resources( env, dc, resource_class, alarm_reader, boto_client,integration_id_list, yaml_inputs):
 
     '''
         This will find all those resources which  either dont contains the alarms, 
@@ -76,13 +78,23 @@ def get_unmonitored_metric_for_resources( env, dc, resource_class, alarm_reader,
 
     # Fetch all unmonitored resources 
     aws_resource = resource_class(env, dc, boto_client)
+    #this will fetch the info from the elasticcache_redis.py - list of active resources for which we need to check further
     actice_resources = aws_resource.get_resources_to_monitor()
+
+    print("alarm_reader")
+    print(alarm_reader)
 
     # Fetch metric threshholds
     resource_class_metric_thresholds = alarm_reader.METRIC_THRESHOLDS.get( resource_class.ACTIVE_RESOURCE_TYPE, {})
+    print("resource_class_metric_thresholds")
+    print(resource_class_metric_thresholds)
+
 
     # Fetch metrics map for a namespace
     metrics_monitored_for_namespace = alarm_reader.MANDATORY_METRICS_MAP[namespace]
+    print("metrics_monitored_for_namespace")
+    print(metrics_monitored_for_namespace)
+
     for resource in actice_resources:
         readable_resource_name = (
             resource_class.get_readable_resource_name_from_arn( resource))
@@ -90,39 +102,54 @@ def get_unmonitored_metric_for_resources( env, dc, resource_class, alarm_reader,
         metrics_with_threshold = resource_class_metric_thresholds.get(
             resource_class.get_resource_name_from_arn(resource), [])
 
+        print("metrics_with_threshold")
+        print(metrics_with_threshold)
+
+
         metrics_monitored_key = aws_resource.get_metrics_monitored_key(resource)
         metrics_monitored = metrics_monitored_for_namespace.get(
             metrics_monitored_key, set())
+
+        print("metrics_monitored")
+        print(metrics_monitored)
 
         if resource_class.SUPPRESS_ON_ANY_METRIC:
             if not metrics_monitored:
                 unmonitored_resource_metric_map[readable_resource_name] = ''
 
         else:
+            print("metrics_monitored")
+            print(metrics_monitored)
+            #if want all the metrics, then we can remove the - metrics_monitored from the below line
             metrics_unmonitored = (
                 set(MANDATORY_ALARM_METRICS[resource_class.ACTIVE_RESOURCE_TYPE]) - metrics_monitored)
             metrics_unmonitored = metrics_unmonitored - set(metrics_with_threshold)
+            print("metrics unmonitored")
+            print(metrics_unmonitored)
 
             if metrics_unmonitored:
                 unmonitored_resource_metric_map[readable_resource_name] = (
                     metrics_unmonitored)
-
+                
+    print("Detail from get_unmonitored_metric_for_resources function ")
+    #from here we will get the resource name which is elasticache and active cache in list and cache:[metric alrm not avaialable] maping
+    print(aws_resource, actice_resources, unmonitored_resource_metric_map)
     return aws_resource, actice_resources, unmonitored_resource_metric_map
 
-def get_unmonitored_resources_for_region( env, dc, resource_class, alarm_reader, boto_client):
+def get_unmonitored_resources_for_region( env, dc, resource_class, alarm_reader, boto_client,integration_id_list, yaml_inputs):
 
     '''
        This will find all those resources for a specific region, which either dont contains the alarms, 
         or if contains the alarm so dont  have any SNS topic or endpoint to it. 
     '''
 
-    aws_resource, active_resources, unmonitored_resources = get_unmonitored_metric_for_resources( env, dc, resource_class, alarm_reader, boto_client)
+    aws_resource, active_resources, unmonitored_resources = get_unmonitored_metric_for_resources( env, dc, resource_class, alarm_reader, boto_client,integration_id_list, yaml_inputs)
 
     return dc, active_resources, unmonitored_resources, aws_resource
 
 
 def run_checker_for_resource(resource_class, env, dcs, boto_clients, spreadsheet, business_team_map,
-                             regional_alarm_readers, sns_topic_subscription_map):
+                             regional_alarm_readers, sns_topic_subscription_map,integration_id_list, yaml_inputs):
     
     '''
         This will fetch all the unmonitored resources and alarm details for each region in a thread.
@@ -152,7 +179,7 @@ def run_checker_for_resource(resource_class, env, dcs, boto_clients, spreadsheet
 
         # Fetch all the resources per region which needs to be monitored.
         region_futures.append(region_pool.submit(
-            get_unmonitored_resources_for_region, env, dc, resource_class, alarm_reader, boto_clients[dc]))
+            get_unmonitored_resources_for_region, env, dc, resource_class, alarm_reader, boto_clients[dc],integration_id_list, yaml_inputs))
 
     for future in as_completed(region_futures):
         dc, active_resources, unmonitored_resources, aws_resource = future.result()
@@ -160,14 +187,20 @@ def run_checker_for_resource(resource_class, env, dcs, boto_clients, spreadsheet
 
     # unique_resource_group = group_alarms_by_resource( regional_resource_type_alarm_action_map)
 
-    generate_pretty_table(
-        resource_class, active_resources, region_unmonitored_resources_map,
+    # generate_pretty_table(resource_class, active_resources, region_unmonitored_resources_map,regional_resource_type_alarm_action_map, business_team_map, sns_topic_subscription_map)
+    print("---------region_unmonitored_resources_map from run_checker_for_resource fucntion-------")
+    print(region_unmonitored_resources_map)
+
+    print("spreadsheet, resource_class, active_resources,region_unmonitored_resources_map,regional_resource_type_alarm_action_map, business_team_map, sns_topic_subscription_map")
+    
+    print(spreadsheet, resource_class, active_resources,
+        region_unmonitored_resources_map,
         regional_resource_type_alarm_action_map, business_team_map, sns_topic_subscription_map)
 
     n_rows = write_to_spreadsheet(
         spreadsheet, resource_class, active_resources,
         region_unmonitored_resources_map,
-        regional_resource_type_alarm_action_map, business_team_map, sns_topic_subscription_map)
+        regional_resource_type_alarm_action_map, business_team_map, sns_topic_subscription_map,integration_id_list, yaml_inputs)
 
     return bool(n_rows)
 
@@ -176,6 +209,7 @@ def aws_alarm_checker(env, yaml_inputs, business_team_map, dcs, spreadsheet_writ
     # Getting the AWS access boto client and cloud watch boto client for different regions  
     resource_boto_clients = get_boto_clients(env, resource_classes, dcs, yaml_inputs)
     cloudwatch_boto_clients = get_cloudwatch_boto_clients(env, dcs, yaml_inputs)
+    integration_id_list=run_integration()
     
     regional_alarm_readers = {}
     regional_sns_topic_subscription_map = {}
@@ -185,8 +219,11 @@ def aws_alarm_checker(env, yaml_inputs, business_team_map, dcs, spreadsheet_writ
         region = yaml_inputs['env_region_map'][dc]['region']
         alarm_reader = AWSAlarmReader(cloudwatch_boto_clients[dc])
         alarm_reader.read()
-
+        
+        #this will list all the alarms
         regional_alarm_readers[dc] = alarm_reader
+
+        #{dc:{{sns: ['subscription']},sns: ['subscription']}}
         regional_sns_topic_subscription_map[dc] = get_sns_topic_subscription_map(env, region, dc)  # noqa: E501
 
     # As a part of this multiple threads will be created depending upon tthe number of resources to be examined.
@@ -198,7 +235,7 @@ def aws_alarm_checker(env, yaml_inputs, business_team_map, dcs, spreadsheet_writ
         resource_class_futures.append(
             resource_class_pool.submit(
                 run_checker_for_resource, resource_class, env, dcs, resource_boto_clients[resource_class],
-                spreadsheet_writer, business_team_map, regional_alarm_readers, regional_sns_topic_subscription_map))
+                spreadsheet_writer, business_team_map, regional_alarm_readers, regional_sns_topic_subscription_map,integration_id_list, yaml_inputs))
 
     has_unmonitored_resources = False
     for future in as_completed(resource_class_futures):

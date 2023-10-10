@@ -293,5 +293,8 @@ def get_sns_topic_subscription_map(env, region, dc):
 
             # AMp is created in which topic_arn will be the key and subscription_arn will be the value
             topic_subscription_map[topic_arn].append(subscription_arn)
+    
+    print("------get_sns_topic_subscription_map from alrms.py----------")
+    print(topic_subscription_map)
 
     return topic_subscription_map                           

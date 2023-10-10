@@ -83,3 +83,19 @@ def get_cloudwatch_boto_clients(env, regions, yaml_inputs):
         boto_clients[dc] = get_boto_client( env, 'cloudwatch', region, dc)
 
     return boto_clients
+
+def get_sns_boto_clients(env, regions, yaml_inputs):
+
+    ''' 
+         Get cludwatch boto client for any env and region, from centralized secret store parameters.
+
+    '''
+
+    boto_clients = {}
+
+    for dc in regions:
+        region = yaml_inputs['env_region_map'][dc]['region']
+        boto_clients[dc] = get_boto_client( env, 'sns', region, dc)
+
+    return boto_clients
+

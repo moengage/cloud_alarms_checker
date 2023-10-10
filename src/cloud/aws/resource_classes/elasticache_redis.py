@@ -67,7 +67,8 @@ class ElasticacheRedisAWSResource(BaseAWSResource):
                 
             except Exception:
                 pass
-
+        # print("Elasticache Tags for all the cluster arn")
+        # print(resource_arn_tags_map)
         return resource_arn_tags_map
 
     def get_resource_tags_map(self, resource_arns):
@@ -97,6 +98,8 @@ class ElasticacheRedisAWSResource(BaseAWSResource):
 
             resource_name_tags_map.update(future.result())
 
+        # print("Elasticache Tags map with the cache name for all the cluster id")
+        # print(resource_name_tags_map)
         return resource_name_tags_map
 
     def get_resource_ids(self, resources):
@@ -126,7 +129,8 @@ class ElasticacheRedisAWSResource(BaseAWSResource):
         print('ALL RESOURCES COUNT: %s' % len(all_resources))
         all_resource_arns = self.get_resource_ids(all_resources)
 
-        monitored_resources = self.filter_active_resources_by_monitor_tag(all_resource_arns)
+        # monitored_resources = self.filter_active_resources_by_monitor_tag(all_resource_arns)
+        monitored_resources = all_resource_arns
 
         return monitored_resources
         #return all_resource_arns
@@ -141,7 +145,7 @@ class ElasticacheRedisAWSResource(BaseAWSResource):
 
         # List all the Elasticcache Redis which dont contains inactive tag.
         monitored_resource_arns = self.get_monitored_resources()
-        print('Number of Elasticcache Redis not having Inactive tag: %s' % len(monitored_resource_arns))
+        # print('Number of Elasticcache Redis not having Inactive tag: %s' % len(monitored_resource_arns))
 
         # Creates resource names map with Elasticcache Redis name as key and Elasticcache Redis arn as value.
         resource_name_arn_map = {
@@ -150,10 +154,13 @@ class ElasticacheRedisAWSResource(BaseAWSResource):
         }
 
         # This will list all those Elasticcache Redis which contain the sum of metric values greater than 0.
-        active_resource_names = self.get_active_resources(
-            self.NAMESPACE, self.ACTIVE_METRIC_NAME, self.ACTIVE_STAT,
-            self.ACTIVE_PERIOD, self.ACTIVE_RESOURCE_TYPE,
-            resource_name_arn_map.keys())
+        # active_resource_names = self.get_active_resources(
+        #     self.NAMESPACE, self.ACTIVE_METRIC_NAME, self.ACTIVE_STAT,
+        #     self.ACTIVE_PERIOD, self.ACTIVE_RESOURCE_TYPE,
+        #     resource_name_arn_map.keys())
+        active_resource_names = resource_name_arn_map.keys()
+        print("Active Resource Name")
+        print(active_resource_names)
 
         print('No of Elasticcache Redis for which alarms needs to be checked are : %s' % len(active_resource_names))
 

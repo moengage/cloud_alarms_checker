@@ -11,6 +11,11 @@ class CloudwatchMetric:
     HTTPCode_Target_5XX_Count = 'HTTPCode_Target_5XX_Count'
     TargetResponseTime = 'TargetResponseTime'
     FreeableMemory = 'FreeableMemory'
+    EngineCPUUtilization = 'EngineCPUUtilization'
+    CPUUtilization = 'CPUUtilization'
+    DatabaseMemoryUsagePercentage = 'DatabaseMemoryUsagePercentage'
+    NewConnections = 'NewConnections'
+    NetworkConntrackAllowanceExceeded ='NetworkConntrackAllowanceExceeded'
     HealthyHostCount = 'HealthyHostCount'
     ApproximateAgeOfOldestMessage = 'ApproximateAgeOfOldestMessage'
     ApproximateNumberOfMessagesDelayed = 'ApproximateNumberOfMessagesDelayed'
@@ -27,8 +32,8 @@ class CloudwatchMetric:
 MANDATORY_ALARM_METRICS = {
     ResourceType.LOAD_BALANCER: [CloudwatchMetric.HTTPCode_ELB_5XX_Count],
     ResourceType.TARGET_GROUP: [CloudwatchMetric.HTTPCode_Target_5XX_Count, CloudwatchMetric.TargetResponseTime],  # noqa: E501
-    ResourceType.REDIS_CACHE_CLUSTER: [CloudwatchMetric.FreeableMemory],
-    ResourceType.SQS_QUEUE: [],
+    ResourceType.REDIS_CACHE_CLUSTER: [CloudwatchMetric.FreeableMemory, CloudwatchMetric.EngineCPUUtilization, CloudwatchMetric.CPUUtilization, CloudwatchMetric.DatabaseMemoryUsagePercentage, CloudwatchMetric.NewConnections, CloudwatchMetric.NetworkConntrackAllowanceExceeded],
+    ResourceType.SQS_QUEUE: [CloudwatchMetric.ApproximateAgeOfOldestMessage],
 }
 
 
@@ -38,6 +43,11 @@ METRIC_RESOURCE_TYPE_MAP = {
     CloudwatchMetric.HealthyHostCount: ResourceType.TARGET_GROUP,
     CloudwatchMetric.TargetResponseTime: ResourceType.TARGET_GROUP,
     CloudwatchMetric.FreeableMemory: ResourceType.REDIS_CACHE_CLUSTER,
+    CloudwatchMetric.EngineCPUUtilization: ResourceType.REDIS_CACHE_CLUSTER,
+    CloudwatchMetric.CPUUtilization: ResourceType.REDIS_CACHE_CLUSTER,
+    CloudwatchMetric.DatabaseMemoryUsagePercentage: ResourceType.REDIS_CACHE_CLUSTER,
+    CloudwatchMetric.NewConnections: ResourceType.REDIS_CACHE_CLUSTER,
+    CloudwatchMetric.NetworkConntrackAllowanceExceeded: ResourceType.REDIS_CACHE_CLUSTER,
     CloudwatchMetric.ApproximateAgeOfOldestMessage: ResourceType.SQS_QUEUE,
     CloudwatchMetric.ApproximateNumberOfMessagesDelayed: ResourceType.SQS_QUEUE,  # noqa: E501
     CloudwatchMetric.ApproximateNumberOfMessagesNotVisible: ResourceType.SQS_QUEUE,  # noqa: E501

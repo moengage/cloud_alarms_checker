@@ -1,8 +1,10 @@
 from cloud.aws.utils.constants import MANDATORY_ACTION_TYPES, ResourceType
 from cloud.aws.utils.utils import get_alarm_link
+from cloud.aws.utils.sns_validity import check_sns_validity
+
 
 def write_to_spreadsheet(spreadsheet_writer, resource_class, active_resources, region_unmonitored_resources_map,
-                         regional_resource_type_alarm_action_map, business_team_map, sns_topic_subscription_map):
+                         regional_resource_type_alarm_action_map, business_team_map, sns_topic_subscription_map,integration_id_list, yaml_inputs):
 
     '''
         This will create the spread sheet and write the header row in the format of  
@@ -13,23 +15,48 @@ def write_to_spreadsheet(spreadsheet_writer, resource_class, active_resources, r
     # Adding Region And Resource type in header
     header_row = [ 'DC_NAME', resource_class.ACTIVE_RESOURCE_TYPE ]
 
+    header_row.extend([ 'Business', 'Team', 'Service', 'SubService'])
+
     # If SUPPRESS_ON_ANY_METRIC variale is set, then one more extra field is appended
     if not resource_class.SUPPRESS_ON_ANY_METRIC:
-        header_row.append('Missing alarm metrics')
+        header_row.append('Missing alarm metrics with reason')
+    
+    if not resource_class.SUPPRESS_ON_ANY_METRIC:
+        header_row.append('Alarm')
 
     # Adding other fields in the header
-    header_row.extend([ 'Business', 'Team', 'Service', 'SubService', 'Reason', 'Alarm'])
+    
 
     # Creating the sheet for a specific resource type in the spread sheet with header row defined above.
     sheet = spreadsheet_writer.create_sheet( resource_class.VERBOSE_NAME, header_row)
 
     # Creating more rows based on the details obtained from the map, like region name, resource_name etc.
-    rows = get_rows_from_region_unmonitored_resources_map( region_unmonitored_resources_map, resource_class, business_team_map)
+    first_rows = get_rows_from_region_unmonitored_resources_map( region_unmonitored_resources_map, resource_class, business_team_map)
 
+    print("first rows")
+    print(first_rows)
+    second_rows= get_rows_from_alarm_action_map( resource_class, active_resources, regional_resource_type_alarm_action_map,region_unmonitored_resources_map, business_team_map, sns_topic_subscription_map,integration_id_list, yaml_inputs)
+    print("second_rows")
+    print(second_rows)
+    rows=[]
+    for index1 in first_rows:
+        found = False
+        for index2 in second_rows:
+            if index1[0] == index2[0] and index1[1] == index2[1]:
+                # Joining two relevant columns with a new line separator
+                print("Inside")
+                rows.append([index1[0], index1[1], index1[2], index2[3], index2[4],
+                                index2[5],index1[6]+"\n" + index2[6], index2[7]])
+                found = True
+                break
+        if not found:
+            rows.append(index1)
 
-    rows.extend( get_rows_from_alarm_action_map( resource_class, active_resources, regional_resource_type_alarm_action_map,
-                                                 region_unmonitored_resources_map, business_team_map, sns_topic_subscription_map))
-
+    print("Rows from writer.py")
+    print(rows)
+    print("-----from writer function --------")
+    print(region_unmonitored_resources_map )
+    print(sns_topic_subscription_map)
     sheet.append_rows(rows, value_input_option='USER_ENTERED')
     sheet.sort(
         (5, 'asc'), (8, 'asc'), (5, 'asc'), (1, 'asc'),
@@ -59,30 +86,31 @@ def get_rows_from_region_unmonitored_resources_map( region_unmonitored_resources
             business = aws_resource.RESOURCE_TAGS_MAP[resource].get( 'Business', '').lower()
 
             row = [region, resource]
-            if not resource_class.SUPPRESS_ON_ANY_METRIC:
-                row.append(', '.join(metrics))
-            
+                
             # Fetching other information and storing in row.
             row.extend([
                 business,
                 business_team_map.get(business, ''),
                 aws_resource.RESOURCE_TAGS_MAP[resource].get('Service', ''),
-                aws_resource.RESOURCE_TAGS_MAP[resource].get('SubService', ''),
-                reason, alarm
+                aws_resource.RESOURCE_TAGS_MAP[resource].get('SubService', '')
             ])
-            rows.append(row)
 
+            if not resource_class.SUPPRESS_ON_ANY_METRIC:
+                row.append(f'----{reason}\n'.join(metrics))
+            row[-1]=row[-1]+f"----{reason}"
+                # row.append(f'\n'.join(metrics))
+            rows.append(row)
     return rows
 
-
 def get_rows_from_alarm_action_map(resource_class, active_resources, regional_resource_type_alarm_action_map, region_unmonitored_resources_map,
-                                   business_team_map, sns_topic_subscription_map, text_format=False):
+                                   business_team_map, sns_topic_subscription_map,integration_id_list, yaml_inputs,text_format=False ):
 
     '''
         This will fill remaining information in the sheet, like reason for unmonitoring and alarm etc.
     '''
 
     rows = []
+    rows_return=[]
     active_resource_names = []
     resource_type = resource_class.ACTIVE_RESOURCE_TYPE
  
@@ -97,16 +125,26 @@ def get_rows_from_alarm_action_map(resource_class, active_resources, regional_re
             resource_name = resource_name.split('/')[2]
 
         active_resource_names.append(resource_name)
-
+        
+    print("regional_resource_type_alarm_action_map from writer.py inside")
+    print(regional_resource_type_alarm_action_map)
     for region, resource_map in regional_resource_type_alarm_action_map.items():
+
+        print("Region from writer get_rows_from_alarm_action_map")
+        print(region)
+
 
         # fetching resources for a specific region 
         aws_resource = region_unmonitored_resources_map[region][0]
-
+        print(resource_map[resource_type])
         # Fetching resource name, alarm name, metruc name etc from the map
         for resource_name, alarm_name, metric_name, action_types, alarm_actions in resource_map[resource_type]: 
             missing_action_types = set(MANDATORY_ACTION_TYPES) - set(action_types) 
-
+            
+            print("resource_name, alarm_name, metric_name, action_types, alarm_actions")
+            print(resource_name, alarm_name, metric_name, action_types, alarm_actions)
+            print("missing_action_types")
+            print(missing_action_types)
             # Skip inactive resources
             if resource_name not in active_resource_names:
                 continue
@@ -122,53 +160,93 @@ def get_rows_from_alarm_action_map(resource_class, active_resources, regional_re
 
             
             reason = ''
-            # If alarm dont contain the SNS topic attached to it, then correspondinf reason will be created
+            # If alarm doesn't contain the SNS topic attached to it, then corresponding reason will be created
             if missing_action_types:
                 verbose_missing_action_types = ', '.join(missing_action_types).upper() 
                 reason = f'No {verbose_missing_action_types} topic associated'
-            
-            # If there is no endpoint in the SNS present, tehn corresponding reason is created.
+
+            # If there is no endpoint in the SNS present, then corresponding reason is created.
             else:
                 if 'sns' in action_types:
                     has_sns_subscription = False
+                    valid_subscription = False
 
                     for alarm_action in alarm_actions:
                         if alarm_action in sns_topic_subscription_map[region]:
                             has_sns_subscription = True
-                            break
+                        subscription_arn = alarm_action
+                        print("subscription_arn")
+                        print(subscription_arn)
+                        region_name=yaml_inputs['env_region_map'][region]['region']
+                        subscription_info = check_sns_validity(integration_id_list,region_name,subscription_arn)
+                        print("subscription_info")
+                        print(subscription_info)
+                        if subscription_info == "Valid Alarm":
+                            valid_subscription = True
+                        break
 
-                    if has_sns_subscription:
+                    if has_sns_subscription and valid_subscription:
                         continue
+                    elif has_sns_subscription and not valid_subscription:
+                        reason = "SNS topic has invalid HTTP(S) - PD endpoint subscription"                
                     else:
-                        reason = 'SNS topic is missing Endpoints'  # noqa: E501
+                        reason = 'SNS topic has missing Endpoints'
 
             if not reason:
                 continue
-            
+
             # Finding teh alarm link for all those alarm which are associted with resouves and dont have SNS topic
             alarm_link = get_alarm_link(alarm_name, region)
-
+            
+            
             row = [region, resource_name]
-            if not resource_class.SUPPRESS_ON_ANY_METRIC:
-                row.append(metric_name)
-                
             try:
                 tags = aws_resource.RESOURCE_TAGS_MAP[resource_name]
             except KeyError:
                 print("KeyError for ", resource_name)
+
+
             business = tags.get('Business', '').lower()
-
-            alarm = alarm_name
-            if not text_format:
-                alarm = f'=HYPERLINK("{alarm_link}","{alarm_name}")'
-
             row.extend([
                 business,
                 business_team_map.get(business, ''),
                 tags.get('Service', ''),
-                tags.get('SubService', ''),
-                reason, alarm])
+                tags.get('SubService', '')
+               ])
+
+
+            if not resource_class.SUPPRESS_ON_ANY_METRIC:
+                print("Inside Suppress")
+                row.append(metric_name)
+
+            row[-1]=row[-1]+f"----{reason}"
+            print(row)
+                
+            alarm = alarm_name
+            alarmlink=f'https://console.aws.amazon.com/cloudwatch/home?region={region_name}#alarmsV2:alarm/{alarm}'
+            # if not text_format:
+            #     alarm = f'=HYPERLINK("{alarm_link}","{alarm_name}")'
+
+            if not resource_class.SUPPRESS_ON_ANY_METRIC:
+                print("Inside Suppress Alarm")
+                row.append(alarmlink)
 
             rows.append(row)
+        
+    if len(rows)>1:
+        for item in rows:
+            found = False
+            for l in rows_return:
+                if item[0] == l[0] and item[1] == l[1]:
+                    # Joining two relevant columns with a new line separator
+                    l[-1] += "\n" + item[-1]
+                    l[-2] += "\n" + item[-2]
+                    found = True
+                    break
+            if not found:
+                rows_return.append(item)
+    else:
+        rows_return=rows
 
-    return rows
+    print(rows_return)
+    return rows_return

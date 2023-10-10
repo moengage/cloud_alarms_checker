@@ -1,9 +1,9 @@
 outboundNotification:
   slack:
     useSlack: True
-    slackChannelName: []
+    slackChannelName: ['infinity-bot-dev']
     useAwsSecretManager: True
     secretName: 'infinity-slack-secrets'
-    secretRegion: ''
+    secretRegion: 'ap-southeast-1'
     #useAwsSecretManager: False
     #slackWebhookUrl: []
