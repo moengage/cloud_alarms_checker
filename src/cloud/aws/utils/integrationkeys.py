@@ -145,13 +145,15 @@ def get_integrations_for_team(team):
    
     return integration_key_list
 
-def get_pd_api_key():
-    apikey_info = AWSSecretStoreSecret( 'pagerduty_api_key','ap-southeast-1').get()
-    apikey = json.loads( apikey_info)['pagerduty_api_key']
+def get_pd_api_key(pd_secretname,pd_secretregion):
+    apikey_info = AWSSecretStoreSecret( pd_secretname,pd_secretregion).get()
+    apikey = json.loads( apikey_info)[pd_secretname]
     return apikey
 
-def run_integration():
-    pypd.api_key = get_pd_api_key()
+def run_integration(yaml_inputs):
+    pd_secretname= yaml_inputs['pagerduty']['pd_apikey_secret_name']
+    pd_secretregion= yaml_inputs['pagerduty']['pd_apikey_secret_region']
+    pypd.api_key = get_pd_api_key(pd_secretname, pd_secretregion)
     integration_key_list=[]
 
     team_services=get_teams_and_services()

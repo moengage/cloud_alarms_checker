@@ -8,10 +8,17 @@ spec:
   cloud: aws
   env: prod
   env_region_map:
-    dc04:
-      region: us-east-2
-      secret_name: infinity-prod-user
-      secretRegion: 'ap-southeast-1'
+    dc01:
+      region: ''
+      secret_name: 'infinity-prod-user'
+      secretRegion: ''
+      pd_integration_key_check: True
+      #aws_access_key: ''
+      #aws_access_secret: ''
+
+  pagerduty:
+    pd_apikey_secret_name: ''
+    pd_apikey_secret_region: ''
 
   awsAccessSecrets:
     useAwsSecretManager: True
@@ -22,7 +29,7 @@ spec:
       useSheets: True
       useAwsSecretManager: True
       secretName: 'gsheets_service_account_credentials'
-      secretRegion: 'ap-southeast-1'
+      secretRegion: ''
       #useAwsSecretManager: False
       #credentialsInfo:
         #type: 'service_account'
@@ -35,10 +42,5 @@ spec:
         #auth_provider_x509_cert_url: ''
         #client_x509_cert_url: ''
       sharing:
-        reader: 'moengage.com'
-        writer: 'sre@moengage.com'
-
-  buisness_team_map:
-    consul:
-      useConsul: True
-      url: 'https://consul.moengage.com'
+        reader: ''
+        writer: ''

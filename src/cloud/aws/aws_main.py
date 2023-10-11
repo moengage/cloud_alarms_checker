@@ -52,6 +52,10 @@ def generate_pretty_table( resource_class, active_resources, region_unmonitored_
     first_rows = get_rows_from_region_unmonitored_resources_map( region_unmonitored_resources_map, resource_class, business_team_map)
 
     second_rows= get_rows_from_alarm_action_map( resource_class, active_resources, regional_resource_type_alarm_action_map,region_unmonitored_resources_map, business_team_map, sns_topic_subscription_map,integration_id_list, yaml_inputs)
+
+    # below we are formatting the column of the sheet based on the individual result we got from above line 52 and 54
+    # we are checking if the resouce name and dc in list of rows of first row match with resouce name and dc in list of rows of second row, then update the data ofMissing alarm metrics with reason' having both row first and row second detail.
+    
     rows=[]
     for index1 in first_rows:
         found = False
@@ -199,8 +203,14 @@ def aws_alarm_checker(env, yaml_inputs, business_team_map, dcs, spreadsheet_writ
     resource_boto_clients = get_boto_clients(env, resource_classes, dcs, yaml_inputs)
     cloudwatch_boto_clients = get_cloudwatch_boto_clients(env, dcs, yaml_inputs)
 
-    #Getting the valid pagerduty integration key list for all the team and services
-    integration_id_list=run_integration()
+    # Getting the boolean value from the input file to check, if user wants of have the pd integration key validation included or not
+    pd_integration_check=yaml_inputs['env_region_map'][region]['pd_integration_key_check']
+    if pd_integration_check == True:
+
+    # Getting the valid pagerduty integration key list for all the team and services
+        integration_id_list=run_integration(yaml_inputs)
+    else:
+        integration_id_list=[]
     
     regional_alarm_readers = {}
     regional_sns_topic_subscription_map = {}

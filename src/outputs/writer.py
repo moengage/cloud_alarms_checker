@@ -32,6 +32,10 @@ def write_to_spreadsheet(spreadsheet_writer, resource_class, active_resources, r
 
     second_rows= get_rows_from_alarm_action_map( resource_class, active_resources, regional_resource_type_alarm_action_map,region_unmonitored_resources_map, business_team_map, sns_topic_subscription_map,integration_id_list, yaml_inputs)
     rows=[]
+
+    # below we are formatting the column of the sheet based on the individual result we got from above line 31 and 33
+    # we are checking if the resouce name and dc in list of rows of first row match with resouce name and dc in list of rows of second row, then update the data of 'Missing alarm metrics with reason' having both row first and row second detail.
+    
     for index1 in first_rows:
         found = False
         for index2 in second_rows:
@@ -152,11 +156,17 @@ def get_rows_from_alarm_action_map(resource_class, active_resources, regional_re
                         if alarm_action in sns_topic_subscription_map[region]:
                             has_sns_subscription = True
                         subscription_arn = alarm_action
-                        region_name=yaml_inputs['env_region_map'][region]['region']
-
-                        # This will check the validity of the sns topic by checking the pagerduty integration key
-                        subscription_info = check_sns_validity(integration_id_list,region_name,subscription_arn)
                         
+                        region_name=yaml_inputs['env_region_map'][region]['region']
+                        pd_integration_check=yaml_inputs['env_region_map'][region]['pd_integration_key_check']
+
+                        # Getting the boolean value from the input file to check, if the user wants to validate the sns validity else simply return "valid Alamr"
+                        
+                        if pd_integration_check == True:
+                            # This will check the validity of the sns topic by checking the pagerduty integration key
+                            subscription_info = check_sns_validity(integration_id_list,region_name,subscription_arn)
+                        else:
+                            subscription_info = "Valid Alarm"       
                         if subscription_info == "Valid Alarm":
                             valid_subscription = True
                         break
@@ -197,7 +207,9 @@ def get_rows_from_alarm_action_map(resource_class, active_resources, regional_re
             if not resource_class.SUPPRESS_ON_ANY_METRIC:
                 row.append(alarmlink)
             rows.append(row)
-        
+    
+    # updating the 'Missing alarm metrics with reason' and 'Alarm' column by adding all the metric value and alarm reason in a single column, if multiple metric and alarm found for the same resource.
+
     if len(rows)>1:
         for item in rows:
             found = False
