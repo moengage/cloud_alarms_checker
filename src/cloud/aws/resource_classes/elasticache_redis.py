@@ -67,8 +67,6 @@ class ElasticacheRedisAWSResource(BaseAWSResource):
                 
             except Exception:
                 pass
-        # print("Elasticache Tags for all the cluster arn")
-        # print(resource_arn_tags_map)
         return resource_arn_tags_map
 
     def get_resource_tags_map(self, resource_arns):
