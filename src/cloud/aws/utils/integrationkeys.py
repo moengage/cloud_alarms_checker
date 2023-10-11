@@ -73,9 +73,9 @@ def get_integration_details(service_id, integration_id, api_key):
     return integration_key
 
 # Function to fetch integration id for a service
-def get_service_integration(service_id):
+def get_service_integration(service_id,pd_secretname,pd_secretregion):
     
-    api_key=get_pd_api_key()
+    api_key=get_pd_api_key(pd_secretname,pd_secretregion)
     try:
         # Fetch the service by ID
         service = pypd.Service.fetch(service_id)
@@ -101,7 +101,7 @@ def get_service_integration(service_id):
         print(f'Error occurred while fetching service: {e}')
         return None
 
-def get_integrations_for_team(team):
+def get_integrations_for_team(team,pd_secretname,pd_secretregion):
     team_name = team['team']
     services = team['services']
     
@@ -122,7 +122,7 @@ def get_integrations_for_team(team):
             print(f'- Service: {service_name} ({service_id})')
 
             # Schedule the function to run in a different thread
-            future = executor.submit(get_service_integration, service_id)
+            future = executor.submit(get_service_integration,service_id,pd_secretname,pd_secretregion)
            
             # Map the service name to the future object for later retrieval
             future_to_service[future] = service_name
@@ -158,7 +158,7 @@ def run_integration(yaml_inputs):
 
     team_services=get_teams_and_services()
     for team in team_services:
-        team_integration_keys = get_integrations_for_team(team)
+        team_integration_keys = get_integrations_for_team(team, pd_secretname,pd_secretregion)
         integration_key_list.extend(team_integration_keys)
 
     print(f'Total integration keys: {len(integration_key_list)}')

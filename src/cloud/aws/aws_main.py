@@ -26,7 +26,7 @@ def generate_pretty_table( resource_class, active_resources, region_unmonitored_
     
     '''
         This will create the table and write the header row in the format of  
-        'Region', 'Resource Type' 'Business', 'Team', 'Service', 'SubService', 'Reason', 'Alarm'
+        'DC_NAME', 'Resource Type' 'Business', 'Team', 'Service', 'SubService', 'Missing alarm metrics with reason', 'Alarm'
 
     '''
 
@@ -204,7 +204,9 @@ def aws_alarm_checker(env, yaml_inputs, business_team_map, dcs, spreadsheet_writ
     cloudwatch_boto_clients = get_cloudwatch_boto_clients(env, dcs, yaml_inputs)
 
     # Getting the boolean value from the input file to check, if user wants of have the pd integration key validation included or not
-    pd_integration_check=yaml_inputs['env_region_map'][region]['pd_integration_key_check']
+    
+    pd_integration_check=yaml_inputs['pagerduty']['pd_integration_key_check']
+        
     if pd_integration_check == True:
 
     # Getting the valid pagerduty integration key list for all the team and services

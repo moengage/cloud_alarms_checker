@@ -8,7 +8,7 @@ def write_to_spreadsheet(spreadsheet_writer, resource_class, active_resources, r
 
     '''
         This will create the spread sheet and write the header row in the format of  
-        'Region', 'Resource Type' 'Business', 'Team', 'Service', 'SubService', 'Reason', 'Alarm'
+        'DC_NAME', 'Resource Type' 'Business', 'Team', 'Service', 'SubService', 'Missing alarm metrics with reason', 'Alarm'
 
     '''
 
@@ -158,7 +158,7 @@ def get_rows_from_alarm_action_map(resource_class, active_resources, regional_re
                         subscription_arn = alarm_action
                         
                         region_name=yaml_inputs['env_region_map'][region]['region']
-                        pd_integration_check=yaml_inputs['env_region_map'][region]['pd_integration_key_check']
+                        pd_integration_check=yaml_inputs['pagerduty']['pd_integration_key_check']
 
                         # Getting the boolean value from the input file to check, if the user wants to validate the sns validity else simply return "valid Alamr"
                         
@@ -166,13 +166,16 @@ def get_rows_from_alarm_action_map(resource_class, active_resources, regional_re
                             # This will check the validity of the sns topic by checking the pagerduty integration key
                             subscription_info = check_sns_validity(integration_id_list,region_name,subscription_arn)
                         else:
-                            subscription_info = "Valid Alarm"       
+                            subscription_info = "sns Subscription validity skipped" 
+                                  
                         if subscription_info == "Valid Alarm":
                             valid_subscription = True
                         break
 
                     if has_sns_subscription and valid_subscription:
                         continue
+                    elif has_sns_subscription and subscription_info == "sns Subscription validity skipped":
+                        reason = "SNS validity check is disabled"
                     elif has_sns_subscription and not valid_subscription:
                         reason = "SNS topic has invalid HTTP(S) - PD endpoint subscription"                
                     else:
