@@ -17,6 +17,7 @@ class CloudwatchMetric:
     DatabaseMemoryUsagePercentage = 'DatabaseMemoryUsagePercentage'
     NewConnections = 'NewConnections'
     NetworkConntrackAllowanceExceeded ='NetworkConntrackAllowanceExceeded'
+    IsMaster = 'IsMaster'
     
     HealthyHostCount = 'HealthyHostCount'
     ApproximateAgeOfOldestMessage = 'ApproximateAgeOfOldestMessage'
@@ -34,8 +35,8 @@ class CloudwatchMetric:
 MANDATORY_ALARM_METRICS = {
     ResourceType.LOAD_BALANCER: [CloudwatchMetric.HTTPCode_ELB_5XX_Count],
     ResourceType.TARGET_GROUP: [CloudwatchMetric.HTTPCode_Target_5XX_Count, CloudwatchMetric.TargetResponseTime],  # noqa: E501
-    ResourceType.REDIS_CACHE_CLUSTER: [CloudwatchMetric.FreeableMemory, CloudwatchMetric.EngineCPUUtilization, CloudwatchMetric.CPUUtilization, CloudwatchMetric.DatabaseMemoryUsagePercentage, CloudwatchMetric.NewConnections, CloudwatchMetric.NetworkConntrackAllowanceExceeded],
-    ResourceType.SQS_QUEUE: [CloudwatchMetric.ApproximateAgeOfOldestMessage],
+    ResourceType.REDIS_CACHE_CLUSTER: [CloudwatchMetric.FreeableMemory, CloudwatchMetric.EngineCPUUtilization, CloudwatchMetric.CPUUtilization, CloudwatchMetric.DatabaseMemoryUsagePercentage, CloudwatchMetric.NewConnections, CloudwatchMetric.NetworkConntrackAllowanceExceeded,CloudwatchMetric.IsMaster], # noqa: E501
+    ResourceType.SQS_QUEUE: [CloudwatchMetric.ApproximateNumberOfMessagesVisible],
 }
 
 
@@ -50,6 +51,7 @@ METRIC_RESOURCE_TYPE_MAP = {
     CloudwatchMetric.DatabaseMemoryUsagePercentage: ResourceType.REDIS_CACHE_CLUSTER,
     CloudwatchMetric.NewConnections: ResourceType.REDIS_CACHE_CLUSTER,
     CloudwatchMetric.NetworkConntrackAllowanceExceeded: ResourceType.REDIS_CACHE_CLUSTER,
+    CloudwatchMetric.IsMaster: ResourceType.REDIS_CACHE_CLUSTER,
     CloudwatchMetric.ApproximateAgeOfOldestMessage: ResourceType.SQS_QUEUE,
     CloudwatchMetric.ApproximateNumberOfMessagesDelayed: ResourceType.SQS_QUEUE,  # noqa: E501
     CloudwatchMetric.ApproximateNumberOfMessagesNotVisible: ResourceType.SQS_QUEUE,  # noqa: E501
