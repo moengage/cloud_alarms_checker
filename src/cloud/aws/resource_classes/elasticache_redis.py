@@ -125,9 +125,7 @@ class ElasticacheRedisAWSResource(BaseAWSResource):
         print('ALL RESOURCES COUNT: %s' % len(all_resources))
         all_resource_arns = self.get_resource_ids(all_resources)
 
-        # commenting as we want to fetch the list of all the cache not the ones which have monitor tag
-        # monitored_resources = self.filter_active_resources_by_monitor_tag(all_resource_arns)
-        monitored_resources = all_resource_arns
+        monitored_resources = self.filter_active_resources_by_monitor_tag(all_resource_arns)
 
         return monitored_resources
         #return all_resource_arns
