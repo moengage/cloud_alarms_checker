@@ -15,6 +15,11 @@ spec:
       #aws_access_key: ''
       #aws_access_secret: ''
 
+  pagerduty:
+    pd_apikey_secret_name: ''
+    pd_apikey_secret_region: ''
+    pd_integration_key_check: True
+
   awsAccessSecrets:
     useAwsSecretManager: True
     #useAwsSecretManager: False

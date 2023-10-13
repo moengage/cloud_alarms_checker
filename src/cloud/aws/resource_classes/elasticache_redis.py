@@ -67,7 +67,6 @@ class ElasticacheRedisAWSResource(BaseAWSResource):
                 
             except Exception:
                 pass
-
         return resource_arn_tags_map
 
     def get_resource_tags_map(self, resource_arns):
@@ -149,11 +148,14 @@ class ElasticacheRedisAWSResource(BaseAWSResource):
             for resource_arn in monitored_resource_arns
         }
 
+        # commenting as we want to fetch the list of all the cache not by checking the metric values
         # This will list all those Elasticcache Redis which contain the sum of metric values greater than 0.
-        active_resource_names = self.get_active_resources(
-            self.NAMESPACE, self.ACTIVE_METRIC_NAME, self.ACTIVE_STAT,
-            self.ACTIVE_PERIOD, self.ACTIVE_RESOURCE_TYPE,
-            resource_name_arn_map.keys())
+        # active_resource_names = self.get_active_resources(
+        #     self.NAMESPACE, self.ACTIVE_METRIC_NAME, self.ACTIVE_STAT,
+        #     self.ACTIVE_PERIOD, self.ACTIVE_RESOURCE_TYPE,
+        #     resource_name_arn_map.keys())
+
+        active_resource_names = resource_name_arn_map.keys()
 
         print('No of Elasticcache Redis for which alarms needs to be checked are : %s' % len(active_resource_names))
 
