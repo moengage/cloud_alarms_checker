@@ -5,6 +5,9 @@ from cloud.aws.utils.constants import METRIC_RESOURCE_TYPE_MAP
 from cloud.aws.utils.utils import get_resource_name_from_dimensions
 from cloud.aws.utils.boto_client import get_boto_client
 
+import traceback
+import botocore.exceptions
+
 
 class AWSAlarmReader():
 
@@ -122,18 +125,23 @@ class AWSAlarmReader():
 
             # if parent alarm exist, then describing it to get the associated alarm action.
             if len(parent_alarm_response['CompositeAlarms']) != 0 :
+                try:
+                    parent_alarm_details_response = self.boto_client.describe_alarms(
+                        AlarmNames = [ alarm['AlarmName'] for alarm in parent_alarm_response['CompositeAlarms'] ],
+                        AlarmTypes=[
+                            'CompositeAlarm'
+                        ],
+                    )
+                    alarm_actions = []
+                    for alarm in parent_alarm_details_response['CompositeAlarms']:
+                        for action in alarm['AlarmActions']:
+                            alarm_actions.append(action)
+                            
+                except botocore.exceptions.ClientError:
+                    print(alarm['AlarmName'] , 'THROTTLED')
+                    traceback.print_exc()
 
-                parent_alarm_details_response = self.boto_client.describe_alarms(
-                    AlarmNames = [ alarm['AlarmName'] for alarm in parent_alarm_response['CompositeAlarms'] ],
-                    AlarmTypes=[
-                        'CompositeAlarm'
-                    ],
-                )
-
-                alarm_actions = []
-                for alarm in parent_alarm_details_response['CompositeAlarms']:
-                    for action in alarm['AlarmActions']:
-                          alarm_actions.append(action)
+                
         
         # Creating the resource and alarm action map for future use.
         for action in alarm_actions:
@@ -262,7 +270,7 @@ class AWSAlarmReader():
             future.result()
 
 
-def get_sns_topic_subscription_map(env, region):
+def get_sns_topic_subscription_map(env, region, dc):
     '''
         This will fetch the SNS topic details and stores it in topic_subscription_map map
 
@@ -271,7 +279,7 @@ def get_sns_topic_subscription_map(env, region):
     topic_subscription_map = defaultdict(list)
 
     # Creating a boto client for sns topic
-    boto_client = get_boto_client(env, 'sns', region)
+    boto_client = get_boto_client(env, 'sns', region, dc)
     
     # Ths will list out all sns subscriptions in the form of pages
     paginator = boto_client.get_paginator('list_subscriptions')
@@ -286,4 +294,4 @@ def get_sns_topic_subscription_map(env, region):
             # AMp is created in which topic_arn will be the key and subscription_arn will be the value
             topic_subscription_map[topic_arn].append(subscription_arn)
 
-    return topic_subscription_map
+    return topic_subscription_map                           

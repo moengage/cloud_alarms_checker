@@ -4,8 +4,9 @@ from collections import defaultdict
 
 from cloud.aws.utils.secret import AWSSecretStoreSecret
 from utils.utils import yaml_reader
+from botocore.config import Config
 
-def get_boto_clients(env, resource_classes, regions):
+def get_boto_clients(env, resource_classes, dcs, yaml_inputs):
 
     '''
         This will create a map of boto clients for each region.
@@ -17,29 +18,36 @@ def get_boto_clients(env, resource_classes, regions):
         }
 
     '''
+
     boto_clients = defaultdict(dict)
 
     for resource_class in resource_classes:
-        for region in regions:
-
-            boto_client = get_boto_client(env, resource_class.AWS_SERVICE_NAME, region)
-            boto_clients[resource_class][region] = boto_client
+        for dc in dcs:
+            region = yaml_inputs['env_region_map'][dc]['region']
+            boto_client = get_boto_client(env, resource_class.AWS_SERVICE_NAME, region, dc)
+            boto_clients[resource_class][dc] = boto_client
 
     return boto_clients
 
-def get_boto_client(env, service, region):
+def get_boto_client(env, service, region, dc):
 
     '''
         Get boto client for accesing AWS for any env and region, from centralized secret store parameters.
     '''
 
     yaml_inputs = yaml_reader()
+    
+    if region == '':
+        region = yaml_inputs['env_region_map'][dc]['region']
+        
     inputs = yaml_inputs['awsAccessSecrets']
+    
+    env_region_map = yaml_inputs['env_region_map']
     
     if inputs['useAwsSecretManager'] == True:
 
-        secret_name = inputs['secretName']
-        secret_region = inputs['secretRegion']
+        secret_name = env_region_map[dc]['secret_name']
+        secret_region = env_region_map[dc]['secretRegion']
 
         # Getting the secrets from store
         secret = json.loads(AWSSecretStoreSecret( secret_name, secret_region).get())
@@ -49,17 +57,19 @@ def get_boto_client(env, service, region):
 
     else:
 
-        ACCESS_KEY = inputs['aws_access_key']
-        SECRET_KEY = inputs['aws_access_secret']
+        ACCESS_KEY = env_region_map[dc]['aws_access_key']
+        SECRET_KEY = env_region_map[dc]['aws_access_secret']
 
     # Returning the boto client 
+    config = Config(retries=dict(max_attempts=10))
     return boto3.client(
         service, region_name=region,
-        aws_access_key_id=secret['ACCESS_KEY'],
-        aws_secret_access_key=secret['SECRET_KEY'])
+        aws_access_key_id=ACCESS_KEY,
+        aws_secret_access_key=SECRET_KEY,
+        config = config)
 
 
-def get_cloudwatch_boto_clients(env, regions):
+def get_cloudwatch_boto_clients(env, regions, yaml_inputs):
 
     ''' 
          Get cludwatch boto client for any env and region, from centralized secret store parameters.
@@ -68,7 +78,8 @@ def get_cloudwatch_boto_clients(env, regions):
 
     boto_clients = {}
 
-    for region in regions:
-        boto_clients[region] = get_boto_client( env, 'cloudwatch', region)
+    for dc in regions:
+        region = yaml_inputs['env_region_map'][dc]['region']
+        boto_clients[dc] = get_boto_client( env, 'cloudwatch', region, dc)
 
     return boto_clients

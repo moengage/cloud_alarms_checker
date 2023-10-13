@@ -107,10 +107,10 @@ class LoadBalancerAWSResource(BaseAWSResource):
         all_resource_arns = self.get_resource_ids(all_resources)
         print('ALL RESOURCES COUNT: %s' % len(all_resources))
         
-        # monitored_resources = self.filter_active_resources_by_monitor_tag(all_resource_arns)
+        monitored_resources = self.filter_active_resources_by_monitor_tag(all_resource_arns)
 
-        #return monitored_resources
-        return all_resource_arns
+        return monitored_resources
+        #return all_resource_arns
 
     def get_resources_to_monitor(self):
 

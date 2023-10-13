@@ -2,7 +2,7 @@ import datetime
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from collections import defaultdict
 
-# from constants import MONITOR_TAG, MONITOR_TAG_INACTIVE_VALUE
+from cloud.aws.utils.constants import MONITOR_TAG, MONITOR_TAG_INACTIVE_VALUE
 from cloud.aws.utils.boto_client import get_boto_client
 from utils.utils import get_chunked_list
 
@@ -17,10 +17,10 @@ class BaseAWSResource:
     MANDATORY_ALARM_METRICS_WITH_THRESHOLD = []
     SUPPRESS_ON_ANY_METRIC = False
 
-    def __init__(self, env, region, boto_client):
+    def __init__(self, env,  dc, boto_client):
 
         self.env = env
-        self.region = region
+        self.dc = dc
         self.boto_client = boto_client
         self.USED_RESOURCES = defaultdict(dict)
         self.ID_RESOURCE_MAP = {}
@@ -76,7 +76,7 @@ class BaseAWSResource:
 
         raise NotImplementedError
 
-    '''
+    
     def filter_active_resources_by_monitor_tag(self, resources):
         
         active_resouces = []
@@ -95,7 +95,7 @@ class BaseAWSResource:
                 active_resouces.append(resource_arn)
 
         return active_resouces
-    '''
+    
 
     def get_cloudwatch_active_metric_query( self, namespace, metric_name, resource_type, resource_name, period, stat):
 
@@ -212,7 +212,7 @@ class BaseAWSResource:
         end_timestamp = now
 
         # This will create an iterator for  metric data for a particular region in cloudwatch 
-        boto_client = get_boto_client(self.env, 'cloudwatch', self.region)
+        boto_client = get_boto_client(self.env, 'cloudwatch', '', self.dc)
         paginator = boto_client.get_paginator('get_metric_data')
 
         # This will create the list of list containing each list having chunks with 500 metric queries

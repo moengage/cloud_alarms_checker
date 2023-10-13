@@ -7,37 +7,29 @@
 spec:
   cloud: aws
   env: prod
-  regions: ['us-east-1', 'ap-south-1' , 'eu-central-1', 'us-east-2']
-  exclude_resources_on_tags:
-  tag: 'Monitor'
-  value: 'False'
+  env_region_map:
+    dc01:
+      region: ''
+      secret_name: 'infinity-prod-user'
+      secretRegion: ''
+      #aws_access_key: ''
+      #aws_access_secret: ''
 
-  resources_to_ckeck: [TargetGroupAWSResource, SQSQueueAWSResourceGroup, LoadBalancerAWSResource, ElasticacheRedisAWSResource  ]
-  
+  pagerduty:
+    pd_apikey_secret_name: ''
+    pd_apikey_secret_region: ''
+    pd_integration_key_check: True
+
   awsAccessSecrets:
     useAwsSecretManager: True
-    secretName: 'infinity-prod-user'
-    secretRegion: 'ap-southeast-1'
     #useAwsSecretManager: False
-    #aws_access_key: ''
-    #aws_access_secret: ''
-
-  outboundNotification:
-    slack:
-      useSlack: True
-      slackChannelName: 'infinity-bot'
-      useAwsSecretManager: True
-      secretName: 'infinity-slack-secrets'
-      secretRegion: 'ap-southeast-1'
-      #useAwsSecretManager: False
-      #slackWebhookUrl: ''
 
   sheets:
     googleSheets:
       useSheets: True
       useAwsSecretManager: True
       secretName: 'gsheets_service_account_credentials'
-      secretRegion: 'ap-southeast-1'
+      secretRegion: ''
       #useAwsSecretManager: False
       #credentialsInfo:
         #type: 'service_account'
@@ -50,10 +42,5 @@ spec:
         #auth_provider_x509_cert_url: ''
         #client_x509_cert_url: ''
       sharing:
-        reader: 'moengage.com'
-        writer: 'sre@moengage.com'
-
-  buisness_team_map:
-    consul:
-      useConsul: True
-      url: 'https://consul.moengage.com'
+        reader: ''
+        writer: ''
