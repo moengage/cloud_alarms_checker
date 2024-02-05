@@ -53,7 +53,7 @@ def get_host_count_metrics(bp_name, metric_name, alarm_name, alarm_metric_detail
     metric_name = alarm_metric_details["criteria"]["allOf"][0]["metricName"]
 
 
-    if metric_name  in gateway_backend_pool[gateway_name][bp_name]: 
+    if gateway_backend_pool[gateway_name].get(bp_name) and (metric_name  in gateway_backend_pool[gateway_name][bp_name]): 
         if len(alarm_metric_details['actions']) == 0 :
             gateway_backend_pool[gateway_name][bp_name][metric_name]["link"] = alarm_name
             gateway_backend_pool[gateway_name][bp_name][metric_name]["alarm_present"] = "yes"
@@ -73,7 +73,7 @@ def get_response_time_metrics(bp_name, metric_name, alarm_name, alarm_metric_det
     else:
         return
 
-    if   metric_name  in gateway_backend_pool[gateway_name][bp_name]: 
+    if gateway_backend_pool[gateway_name].get(bp_name) and (metric_name  in gateway_backend_pool[gateway_name][bp_name]): 
         if len(alarm_metric_details['actions']) == 0 :
             gateway_backend_pool[gateway_name][bp_name][metric_name]["link"] = alarm_name
             gateway_backend_pool[gateway_name][bp_name][metric_name]["alarm_present"] = "yes"
@@ -99,7 +99,7 @@ def get_status_code_metrics(bp_name, metric_name, alarm_name, alarm_metric_detai
                 if metric_name == "5xx":
                     metric_name = "Http5xxCount"
 
-        if bp_name != None and metric_name != None:
+        if bp_name != None and metric_name != None and gateway_backend_pool[gateway_name].get(bp_name):
             if  metric_name  in gateway_backend_pool[gateway_name][bp_name]: 
                 if len(alarm_metric_details['actions']) == 0 :
                     gateway_backend_pool[gateway_name][bp_name][metric_name]["link"] = alarm_name
