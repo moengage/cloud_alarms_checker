@@ -4,7 +4,9 @@ prettytable==2.1.0
 sentry-sdk==1.0.0
 requests==2.25.1
 click==8.0.1
-pyyaml
-ndg-httpsclient  
-pyopenssl 
-pyasn1
+PyYAML==6.0.1
+ndg-httpsclient==0.5.1
+pyOpenSSL==24.0.0
+pyasn1==0.5.1
+pypd==1.1.0
+azure-cli==2.53.0
