@@ -22,7 +22,7 @@ from cloud.aws.resource_classes.elasticache_redis import ElasticacheRedisAWSReso
 resource_classes = [TargetGroupAWSResource, SQSQueueAWSResourceGroup, LoadBalancerAWSResource, ElasticacheRedisAWSResource]
 
 def generate_pretty_table( resource_class, active_resources, region_unmonitored_resources_map,
-                           regional_resource_type_alarm_action_map, business_team_map, sns_topic_subscription_map,integration_id_list, yaml_inputs):
+                           regional_resource_type_alarm_action_map, business_team_map, sns_topic_subscription_map,integration_id_list, yaml_inputs,sns_boto_clients, dcs):
     
     '''
         This will create the table and write the header row in the format of  
@@ -51,7 +51,7 @@ def generate_pretty_table( resource_class, active_resources, region_unmonitored_
     # Creating more rows based on the details obtained from the map, like region name, resource_name etc.
     first_rows = get_rows_from_region_unmonitored_resources_map( region_unmonitored_resources_map, resource_class, business_team_map)
 
-    second_rows= get_rows_from_alarm_action_map( resource_class, active_resources, regional_resource_type_alarm_action_map,region_unmonitored_resources_map, business_team_map, sns_topic_subscription_map,integration_id_list, yaml_inputs)
+    second_rows= get_rows_from_alarm_action_map( resource_class, active_resources, regional_resource_type_alarm_action_map,region_unmonitored_resources_map, business_team_map, sns_topic_subscription_map,integration_id_list, yaml_inputs, sns_boto_clients, dcs)
 
     # below we are formatting the column of the sheet based on the individual result we got from above line 52 and 54
     # we are checking if the resouce name and dc in list of rows of first row match with resouce name and dc in list of rows of second row, then update the data ofMissing alarm metrics with reason' having both row first and row second detail.
@@ -85,7 +85,7 @@ def generate_pretty_table( resource_class, active_resources, region_unmonitored_
 
     return len(rows)
 
-def get_unmonitored_metric_for_resources( env, dc, resource_class, alarm_reader, boto_client,integration_id_list, yaml_inputs):
+def get_unmonitored_metric_for_resources( env, dc, resource_class, alarm_reader, boto_client,integration_id_list, yaml_inputs, sns_boto_clients):
 
     '''
         This will find all those resources which  either dont contains the alarms, 
@@ -133,20 +133,20 @@ def get_unmonitored_metric_for_resources( env, dc, resource_class, alarm_reader,
                 
     return aws_resource, actice_resources, unmonitored_resource_metric_map
 
-def get_unmonitored_resources_for_region( env, dc, resource_class, alarm_reader, boto_client,integration_id_list, yaml_inputs):
+def get_unmonitored_resources_for_region( env, dc, resource_class, alarm_reader, boto_client,integration_id_list, yaml_inputs, sns_boto_clients):
 
     '''
        This will find all those resources for a specific region, which either dont contains the alarms, 
         or if contains the alarm so dont  have any SNS topic or endpoint to it. 
     '''
 
-    aws_resource, active_resources, unmonitored_resources = get_unmonitored_metric_for_resources( env, dc, resource_class, alarm_reader, boto_client,integration_id_list, yaml_inputs)
+    aws_resource, active_resources, unmonitored_resources = get_unmonitored_metric_for_resources( env, dc, resource_class, alarm_reader, boto_client,integration_id_list, yaml_inputs, sns_boto_clients)
 
     return dc, active_resources, unmonitored_resources, aws_resource
 
 
 def run_checker_for_resource(resource_class, env, dcs, boto_clients, spreadsheet, business_team_map,
-                             regional_alarm_readers, sns_topic_subscription_map,integration_id_list, yaml_inputs):
+                             regional_alarm_readers, sns_topic_subscription_map,integration_id_list, yaml_inputs, sns_boto_clients):
     
     '''
         This will fetch all the unmonitored resources and alarm details for each region in a thread.
@@ -176,7 +176,7 @@ def run_checker_for_resource(resource_class, env, dcs, boto_clients, spreadsheet
 
         # Fetch all the resources per region which needs to be monitored.
         region_futures.append(region_pool.submit(
-            get_unmonitored_resources_for_region, env, dc, resource_class, alarm_reader, boto_clients[dc],integration_id_list, yaml_inputs))
+            get_unmonitored_resources_for_region, env, dc, resource_class, alarm_reader, boto_clients[dc],integration_id_list, yaml_inputs, sns_boto_clients))
 
     for future in as_completed(region_futures):
         dc, active_resources, unmonitored_resources, aws_resource = future.result()
@@ -184,7 +184,7 @@ def run_checker_for_resource(resource_class, env, dcs, boto_clients, spreadsheet
 
     # unique_resource_group = group_alarms_by_resource( regional_resource_type_alarm_action_map)
 
-    generate_pretty_table(resource_class, active_resources, region_unmonitored_resources_map,regional_resource_type_alarm_action_map, business_team_map, sns_topic_subscription_map,integration_id_list, yaml_inputs)
+    generate_pretty_table(resource_class, active_resources, region_unmonitored_resources_map,regional_resource_type_alarm_action_map, business_team_map, sns_topic_subscription_map,integration_id_list, yaml_inputs,sns_boto_clients, dcs )
     
     print(spreadsheet, resource_class, active_resources,
         region_unmonitored_resources_map,
@@ -193,7 +193,7 @@ def run_checker_for_resource(resource_class, env, dcs, boto_clients, spreadsheet
     n_rows = write_to_spreadsheet(
         spreadsheet, resource_class, active_resources,
         region_unmonitored_resources_map,
-        regional_resource_type_alarm_action_map, business_team_map, sns_topic_subscription_map,integration_id_list, yaml_inputs)
+        regional_resource_type_alarm_action_map, business_team_map, sns_topic_subscription_map,integration_id_list, yaml_inputs, sns_boto_clients,dcs)
 
     return bool(n_rows)
 
@@ -202,6 +202,7 @@ def aws_alarm_checker(env, yaml_inputs, business_team_map, dcs, spreadsheet_writ
     # Getting the AWS access boto client and cloud watch boto client for different regions  
     resource_boto_clients = get_boto_clients(env, resource_classes, dcs, yaml_inputs)
     cloudwatch_boto_clients = get_cloudwatch_boto_clients(env, dcs, yaml_inputs)
+    sns_boto_clients = get_sns_boto_clients(env, dcs, yaml_inputs)
 
     # Getting the boolean value from the input file to check, if user wants of have the pd integration key validation included or not
     
@@ -236,7 +237,7 @@ def aws_alarm_checker(env, yaml_inputs, business_team_map, dcs, spreadsheet_writ
         resource_class_futures.append(
             resource_class_pool.submit(
                 run_checker_for_resource, resource_class, env, dcs, resource_boto_clients[resource_class],
-                spreadsheet_writer, business_team_map, regional_alarm_readers, regional_sns_topic_subscription_map,integration_id_list, yaml_inputs))
+                spreadsheet_writer, business_team_map, regional_alarm_readers, regional_sns_topic_subscription_map,integration_id_list, yaml_inputs, sns_boto_clients))
 
     has_unmonitored_resources = False
     for future in as_completed(resource_class_futures):
