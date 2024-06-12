@@ -20,6 +20,14 @@ spec:
     pd_apikey_secret_region: ''
     pd_integration_key_check: True
 
+  dc_region_map:
+    # us-east-2: 'dc02'
+    region1: ''
+    region2: ''
+    region3: ''
+    region4: ''
+    region5: ''
+
   awsAccessSecrets:
     useAwsSecretManager: True
     #useAwsSecretManager: False

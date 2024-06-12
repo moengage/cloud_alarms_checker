@@ -81,7 +81,7 @@ def get_service_integration(service_id,pd_secretname,pd_secretregion):
         service = pypd.Service.fetch(service_id)
         
         # Iterate over each integration of the service and print its ID
-        if service['status'] == 'active':
+        if service['status'] != 'disabled':
             integration_keys = []
             for integration in iter(service.integrations()):
                 integration_id = integration["id"]
@@ -89,12 +89,9 @@ def get_service_integration(service_id,pd_secretname,pd_secretregion):
                 if integration_key is not None:
                     integration_keys.append(integration_key)
             return integration_keys
-            
-        elif service['status'] == 'disabled':
-            print(service_id, "is disabled")
-            return []
+
         else:
-            print(f'{service_id} is neither active nor disabled')
+            print(f'{service_id} is disabled')
             return []
             
     except Exception as e:
@@ -162,5 +159,5 @@ def run_integration(yaml_inputs):
         integration_key_list.extend(team_integration_keys)
 
     print(f'Total integration keys: {len(integration_key_list)}')
-
+    print(integration_key_list)
     return integration_key_list

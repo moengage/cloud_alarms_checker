@@ -3,9 +3,9 @@ import boto3
 def return_boto_client_sns(region):
     return boto3.client("sns", region_name=region)
 
-def check_sns_validity(integration_id_list,region,sns_arn):
+def check_sns_validity(integration_id_list,dcname,sns_arn, sns_boto_clients):
 
-    boto_client = return_boto_client_sns(region)
+    boto_client = sns_boto_clients[dcname]
     result = ""
     try:
         response = boto_client.list_subscriptions_by_topic(
@@ -23,6 +23,6 @@ def check_sns_validity(integration_id_list,region,sns_arn):
             else:
                 result="Not Valid Alarm - No PDEndpoint"
     except:
-        result = "Not Valid SNS"
+        result = "Not Valid SNS - Exception Occured"
         
     return result
